@@ -7,7 +7,7 @@ void main() {
   testWidgets('Argos SOS controller and bottom bar render', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const ProviderScope(child: GuardianApp()));
+    await tester.pumpWidget(const ProviderScope(child: ArgosApp()));
 
     expect(find.text('Argos'), findsOneWidget);
     expect(find.text('VOICE REPORTING'), findsOneWidget);
