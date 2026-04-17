@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/argos_tab.dart';
 import '../screens/action_page.dart';
 import '../screens/argos_home_page.dart';
+import '../screens/map_alert_page.dart';
 import '../screens/text_report_page.dart';
 import '../screens/voice_report_page.dart';
 import 'app_routes.dart';
@@ -63,14 +64,9 @@ class AppRouter {
           beginOffset: const Offset(0.14, 0),
         );
       case AppRoutes.map:
-        return _buildActionRoute(
+        return _buildMapRoute(
           settings: settings,
           selectedTab: ArgosTab.map,
-          title: 'Map',
-          subtitle:
-              'Track your live location, safety perimeter, and nearby emergency resources.',
-          icon: Icons.place_rounded,
-          accent: const Color(0xFF70CEFF),
           beginOffset: const Offset(0, 0.16),
         );
       case AppRoutes.settings:
@@ -174,6 +170,37 @@ class AppRouter {
       transitionDuration: const Duration(milliseconds: 320),
       reverseTransitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (_, __, ___) => VoiceReportPage(selectedTab: selectedTab),
+      transitionsBuilder: (_, animation, __, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: beginOffset,
+              end: Offset.zero,
+            ).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  static Route<void> _buildMapRoute({
+    required RouteSettings settings,
+    required ArgosTab selectedTab,
+    required Offset beginOffset,
+  }) {
+    return PageRouteBuilder<void>(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 320),
+      reverseTransitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (_, __, ___) => MapAlertPage(selectedTab: selectedTab),
       transitionsBuilder: (_, animation, __, child) {
         final curved = CurvedAnimation(
           parent: animation,
