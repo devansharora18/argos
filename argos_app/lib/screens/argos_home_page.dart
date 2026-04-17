@@ -1,79 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../features/sos/sos_helpers.dart';
 import '../features/sos/sos_radial_controller.dart';
 import '../models/argos_tab.dart';
-import '../models/swipe_direction.dart';
-import '../providers/bottom_tab_provider.dart';
 import '../providers/gesture_provider.dart';
-import '../widgets/argos_bottom_bar.dart';
-import '../widgets/argos_top_bar.dart';
-import '../widgets/guidance_card.dart';
+import '../widgets/argos_screen_shell.dart';
+import '../widgets/argos_status_sections.dart';
 
-class ArgosHomePage extends ConsumerWidget {
+class ArgosHomePage extends ConsumerStatefulWidget {
   const ArgosHomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final gesture = ref.watch(gestureProvider);
-    final activeTab = ref.watch(bottomTabProvider);
-    final lockedDirection = gesture.thresholdPassed
-        ? gesture.activeDirection
-        : SwipeDirection.none;
+  ConsumerState<ArgosHomePage> createState() => _ArgosHomePageState();
+}
 
-    final statusText = lockedDirection == SwipeDirection.none
-        ? 'Swipe from center to choose a reporting channel.'
-        : 'Release to confirm ${directionTitle(lockedDirection)}.';
+class _ArgosHomePageState extends ConsumerState<ArgosHomePage> {
+  final ScrollController _scrollController = ScrollController();
+  ScrollHoldController? _scrollHoldController;
+  late final ProviderSubscription<bool> _inputLockSubscription;
+  late final ProviderSubscription<bool> _dragSubscription;
 
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0A0F1A), Color(0xFF0A111D), Color(0xFF060910)],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Column(
-              children: [
-                const ArgosTopBar(),
-                const SizedBox(height: 18),
-                const Expanded(
-                  child: Align(
-                    alignment: Alignment(0, 0.06),
+  bool _isSosInputLocked = false;
+  bool _isSosDragging = false;
+
+  bool get _shouldLockScroll => _isSosInputLocked || _isSosDragging;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _inputLockSubscription = ref.listenManual<bool>(sosInputLockProvider, (
+      _,
+      next,
+    ) {
+      if (_isSosInputLocked == next) {
+        return;
+      }
+
+      setState(() {
+        _isSosInputLocked = next;
+      });
+      _syncParentScrollLock();
+    });
+
+    _dragSubscription = ref.listenManual<bool>(
+      gestureProvider.select((state) => state.isDragging),
+      (_, next) {
+        if (_isSosDragging == next) {
+          return;
+        }
+
+        setState(() {
+          _isSosDragging = next;
+        });
+        _syncParentScrollLock();
+      },
+    );
+  }
+
+  void _syncParentScrollLock() {
+    if (_shouldLockScroll) {
+      _acquireScrollHold();
+    } else {
+      _releaseScrollHold();
+    }
+  }
+
+  void _acquireScrollHold() {
+    if (_scrollHoldController != null) {
+      return;
+    }
+
+    if (!_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _acquireScrollHold();
+        }
+      });
+      return;
+    }
+
+    _scrollHoldController = _scrollController.position.hold(() {});
+  }
+
+  void _releaseScrollHold() {
+    _scrollHoldController?.cancel();
+    _scrollHoldController = null;
+  }
+
+  @override
+  void dispose() {
+    _releaseScrollHold();
+    _inputLockSubscription.close();
+    _dragSubscription.close();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ArgosScreenShell(
+      selectedTab: ArgosTab.status,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            controller: _scrollController,
+            physics: _shouldLockScroll
+                ? const NeverScrollableScrollPhysics()
+                : const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment(0, 0.05),
                     child: SOSRadialController(),
                   ),
-                ),
-                GuidanceCard(
-                  text: statusText,
-                  activeDirection: lockedDirection,
-                ),
-                const SizedBox(height: 12),
-                ArgosBottomBar(
-                  selectedTab: activeTab,
-                  onSelected: (tab) {
-                    ref.read(bottomTabProvider.notifier).state = tab;
-                    final route = tab.route;
-                    if (route == null) {
-                      return;
-                    }
-
-                    Navigator.of(context).pushNamed(route).whenComplete(() {
-                      if (context.mounted) {
-                        ref.read(bottomTabProvider.notifier).state =
-                            ArgosTab.status;
-                      }
-                    });
-                  },
-                ),
-              ],
+                  SizedBox(height: 10),
+                  ArgosStatusSections(),
+                  SizedBox(height: 6),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

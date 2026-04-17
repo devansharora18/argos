@@ -6,6 +6,8 @@ import '../models/swipe_direction.dart';
 
 const double gestureActivationThreshold = 104;
 
+final sosInputLockProvider = StateProvider<bool>((ref) => false);
+
 class GestureStateNotifier extends StateNotifier<GestureState> {
   GestureStateNotifier({required this.threshold})
     : super(const GestureState.initial());

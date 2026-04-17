@@ -13,7 +13,7 @@ class ArgosApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF05080F),
+        scaffoldBackgroundColor: const Color(0xFF131313),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFFF5F57),
           brightness: Brightness.dark,

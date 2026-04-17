@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/argos_tab.dart';
 import '../screens/action_page.dart';
 import '../screens/argos_home_page.dart';
 import 'app_routes.dart';
@@ -17,6 +18,7 @@ class AppRouter {
       case AppRoutes.voice:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.status,
           title: 'Voice Reporting',
           subtitle:
               'Live voice capture is ready. Keep the channel open until responders confirm your location.',
@@ -27,6 +29,7 @@ class AppRouter {
       case AppRoutes.text:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.status,
           title: 'Text Reporting',
           subtitle:
               'Send a rapid text incident report with auto-attached location and timestamp.',
@@ -37,6 +40,7 @@ class AppRouter {
       case AppRoutes.keyword:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.status,
           title: 'Keyword Reporting',
           subtitle:
               'Activate silent keyword detection for discreet emergency escalation.',
@@ -47,6 +51,7 @@ class AppRouter {
       case AppRoutes.sos:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.status,
           title: 'Instant SOS',
           subtitle:
               'Immediate distress broadcast sent. Stay visible and keep this screen active.',
@@ -57,6 +62,7 @@ class AppRouter {
       case AppRoutes.reports:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.reports,
           title: 'Reports',
           subtitle:
               'Review incident history, response logs, and evidence captured across channels.',
@@ -67,6 +73,7 @@ class AppRouter {
       case AppRoutes.map:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.map,
           title: 'Map',
           subtitle:
               'Track your live location, safety perimeter, and nearby emergency resources.',
@@ -77,6 +84,7 @@ class AppRouter {
       case AppRoutes.settings:
         return _buildActionRoute(
           settings: settings,
+          selectedTab: ArgosTab.settings,
           title: 'Settings',
           subtitle:
               'Manage trusted contacts, privacy controls, and emergency automation preferences.',
@@ -94,6 +102,7 @@ class AppRouter {
 
   static Route<void> _buildActionRoute({
     required RouteSettings settings,
+    required ArgosTab selectedTab,
     required String title,
     required String subtitle,
     required IconData icon,
@@ -105,6 +114,7 @@ class AppRouter {
       transitionDuration: const Duration(milliseconds: 320),
       reverseTransitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (_, __, ___) => ActionPage(
+        selectedTab: selectedTab,
         title: title,
         subtitle: subtitle,
         icon: icon,
