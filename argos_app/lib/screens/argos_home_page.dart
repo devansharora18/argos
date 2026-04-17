@@ -109,6 +109,7 @@ class _ArgosHomePageState extends ConsumerState<ArgosHomePage> {
   Widget build(BuildContext context) {
     return ArgosScreenShell(
       selectedTab: ArgosTab.status,
+      showCurrentStatusInTopBar: true,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

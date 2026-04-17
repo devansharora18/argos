@@ -10,10 +10,12 @@ class ArgosScreenShell extends StatelessWidget {
     super.key,
     required this.selectedTab,
     required this.child,
+    this.showCurrentStatusInTopBar = false,
   });
 
   final ArgosTab selectedTab;
   final Widget child;
+  final bool showCurrentStatusInTopBar;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class ArgosScreenShell extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Column(
             children: [
-              const ArgosTopBar(),
+              ArgosTopBar(showCurrentStatus: showCurrentStatusInTopBar),
               const SizedBox(height: 14),
               Expanded(child: child),
               const SizedBox(height: 10),
