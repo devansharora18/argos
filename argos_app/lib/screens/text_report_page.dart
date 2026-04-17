@@ -282,10 +282,10 @@ class _SendReportButton extends StatelessWidget {
             foregroundColor: const Color(0xFF2B0705),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(34),
+              borderRadius: BorderRadius.circular(24),
             ),
             textStyle: const TextStyle(
-              fontSize: 28,
+              fontSize: 22,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -293,8 +293,8 @@ class _SendReportButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Send Report'),
-              SizedBox(width: 12),
-              Icon(Icons.send_rounded, size: 34),
+              SizedBox(width: 10),
+              Icon(Icons.send_rounded, size: 22),
             ],
           ),
         ),
