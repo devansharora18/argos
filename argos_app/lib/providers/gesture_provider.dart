@@ -5,6 +5,8 @@ import '../models/gesture_state.dart';
 import '../models/swipe_direction.dart';
 
 const double gestureActivationThreshold = 104;
+const double _directionDeadZone = 18;
+const double _dragUpdateEpsilon = 0.3;
 
 final sosInputLockProvider = StateProvider<bool>((ref) => false);
 
@@ -28,9 +30,21 @@ class GestureStateNotifier extends StateNotifier<GestureState> {
     final distance = offset.distance;
     final direction = _resolveDirection(offset, distance);
     final thresholdPassed = distance >= threshold;
+    final delta = offset - state.dragOffset;
+    final hasMeaningfulMotion =
+        delta.dx.abs() >= _dragUpdateEpsilon ||
+        delta.dy.abs() >= _dragUpdateEpsilon;
+    final directionChanged = direction != state.activeDirection;
+    final thresholdChanged = thresholdPassed != state.thresholdPassed;
 
-    if (direction != SwipeDirection.none &&
-        direction != state.activeDirection) {
+    if (!hasMeaningfulMotion &&
+        !directionChanged &&
+        !thresholdChanged &&
+        state.isDragging) {
+      return;
+    }
+
+    if (direction != SwipeDirection.none && directionChanged) {
       HapticFeedback.selectionClick();
     }
 
@@ -43,13 +57,17 @@ class GestureStateNotifier extends StateNotifier<GestureState> {
       _lockHapticTriggered = false;
     }
 
-    state = state.copyWith(
+    final nextState = state.copyWith(
       dragOffset: offset,
       activeDirection: direction,
       isDragging: true,
       dragDistance: distance,
       thresholdPassed: thresholdPassed,
     );
+
+    if (nextState != state) {
+      state = nextState;
+    }
   }
 
   SwipeDirection endDrag() {
@@ -69,11 +87,14 @@ class GestureStateNotifier extends StateNotifier<GestureState> {
 
   void reset() {
     _lockHapticTriggered = false;
-    state = const GestureState.initial();
+    const initialState = GestureState.initial();
+    if (state != initialState) {
+      state = initialState;
+    }
   }
 
   SwipeDirection _resolveDirection(Offset offset, double distance) {
-    if (distance < 18) {
+    if (distance < _directionDeadZone) {
       return SwipeDirection.none;
     }
 

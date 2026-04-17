@@ -23,6 +23,7 @@ class SOSRadialController extends ConsumerWidget {
     final clampedDrag = clampOffset(gesture.dragOffset, _maxVisualDrag);
     final visualOffset = clampedDrag * 0.18;
     final activeDirection = gesture.activeDirection;
+    final directionAccent = directionColor(activeDirection);
     final intensity = gesture.isDragging ? 0.28 + (0.72 * progress) : 0.14;
 
     return SwipeDirectionDetector(
@@ -37,12 +38,16 @@ class SOSRadialController extends ConsumerWidget {
               intensity: intensity,
               thresholdProgress: progress,
             ),
-            CustomPaint(
-              size: const Size.square(_controllerSize),
-              painter: DragTrailPainter(
-                dragOffset: clampedDrag,
-                visible: gesture.isDragging,
-                color: directionColor(activeDirection).withOpacity(0.45),
+            RepaintBoundary(
+              child: CustomPaint(
+                size: const Size.square(_controllerSize),
+                isComplex: true,
+                willChange: gesture.isDragging,
+                painter: DragTrailPainter(
+                  dragOffset: clampedDrag,
+                  visible: gesture.isDragging,
+                  color: directionAccent.withOpacity(0.45),
+                ),
               ),
             ),
             DirectionalLabel(
@@ -90,7 +95,7 @@ class SOSRadialController extends ConsumerWidget {
                 scale: gesture.isDragging ? 1.05 + (0.05 * progress) : 1,
                 child: SOSCoreButton(
                   size: _buttonSize,
-                  activeDirection: activeDirection,
+                  accentColor: directionAccent,
                   thresholdPassed: gesture.thresholdPassed,
                   progress: progress,
                 ),
@@ -174,27 +179,36 @@ class GlowRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size.square(352),
-      painter: GlowRingPainter(
-        activeDirection: activeDirection,
-        intensity: intensity,
-        thresholdProgress: thresholdProgress,
-      ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const RepaintBoundary(
+          child: CustomPaint(
+            size: Size.square(352),
+            isComplex: true,
+            willChange: false,
+            painter: GlowRingBasePainter(),
+          ),
+        ),
+        RepaintBoundary(
+          child: CustomPaint(
+            size: const Size.square(352),
+            isComplex: true,
+            willChange: true,
+            painter: GlowRingHighlightPainter(
+              activeDirection: activeDirection,
+              intensity: intensity,
+              thresholdProgress: thresholdProgress,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-class GlowRingPainter extends CustomPainter {
-  GlowRingPainter({
-    required this.activeDirection,
-    required this.intensity,
-    required this.thresholdProgress,
-  });
-
-  final SwipeDirection activeDirection;
-  final double intensity;
-  final double thresholdProgress;
+class GlowRingBasePainter extends CustomPainter {
+  const GlowRingBasePainter();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -225,13 +239,35 @@ class GlowRingPainter extends CustomPainter {
       if (direction == SwipeDirection.none) {
         continue;
       }
+
       final angle = directionToAngle(direction);
       canvas.drawArc(hintRect, angle - 0.23, 0.46, false, hintPaint);
     }
+  }
 
+  @override
+  bool shouldRepaint(covariant GlowRingBasePainter oldDelegate) => false;
+}
+
+class GlowRingHighlightPainter extends CustomPainter {
+  GlowRingHighlightPainter({
+    required this.activeDirection,
+    required this.intensity,
+    required this.thresholdProgress,
+  });
+
+  final SwipeDirection activeDirection;
+  final double intensity;
+  final double thresholdProgress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
     if (activeDirection == SwipeDirection.none) {
       return;
     }
+
+    final center = size.center(Offset.zero);
+    final radius = (size.shortestSide / 2) - 18;
 
     final arcColor = directionColor(activeDirection);
     final arcRect = Rect.fromCircle(center: center, radius: radius - 9);
@@ -255,7 +291,7 @@ class GlowRingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant GlowRingPainter oldDelegate) {
+  bool shouldRepaint(covariant GlowRingHighlightPainter oldDelegate) {
     return oldDelegate.activeDirection != activeDirection ||
         oldDelegate.intensity != intensity ||
         oldDelegate.thresholdProgress != thresholdProgress;
@@ -314,21 +350,19 @@ class SOSCoreButton extends StatelessWidget {
   const SOSCoreButton({
     super.key,
     required this.size,
-    required this.activeDirection,
+    required this.accentColor,
     required this.thresholdPassed,
     required this.progress,
   });
 
   final double size;
-  final SwipeDirection activeDirection;
+  final Color accentColor;
   final bool thresholdPassed;
   final double progress;
 
   @override
   Widget build(BuildContext context) {
-    final accent = thresholdPassed
-        ? directionColor(activeDirection)
-        : const Color(0xFFFF736C);
+    final accent = thresholdPassed ? accentColor : const Color(0xFFFF736C);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 140),

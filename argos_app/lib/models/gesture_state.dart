@@ -40,4 +40,29 @@ class GestureState {
       thresholdPassed: thresholdPassed ?? this.thresholdPassed,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+
+    return other is GestureState &&
+        other.dragOffset == dragOffset &&
+        other.activeDirection == activeDirection &&
+        other.isDragging == isDragging &&
+        other.dragDistance == dragDistance &&
+        other.thresholdPassed == thresholdPassed;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      dragOffset,
+      activeDirection,
+      isDragging,
+      dragDistance,
+      thresholdPassed,
+    );
+  }
 }

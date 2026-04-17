@@ -22,6 +22,7 @@ class _ArgosHomePageState extends ConsumerState<ArgosHomePage> {
 
   bool _isSosInputLocked = false;
   bool _isSosDragging = false;
+  bool _isScrollLocked = false;
 
   bool get _shouldLockScroll => _isSosInputLocked || _isSosDragging;
 
@@ -59,7 +60,14 @@ class _ArgosHomePageState extends ConsumerState<ArgosHomePage> {
   }
 
   void _syncParentScrollLock() {
-    if (_shouldLockScroll) {
+    final shouldLock = _shouldLockScroll;
+    if (_isScrollLocked == shouldLock) {
+      return;
+    }
+
+    _isScrollLocked = shouldLock;
+
+    if (shouldLock) {
       _acquireScrollHold();
     } else {
       _releaseScrollHold();
@@ -73,7 +81,7 @@ class _ArgosHomePageState extends ConsumerState<ArgosHomePage> {
 
     if (!_scrollController.hasClients) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
+        if (mounted && _isScrollLocked) {
           _acquireScrollHold();
         }
       });
