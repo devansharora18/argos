@@ -10,6 +10,8 @@ void main() {
 
 enum SwipeDirection { up, down, left, right, none }
 
+enum GuardianTab { status, reports, map, settings }
+
 @immutable
 class GestureState {
   const GestureState({
@@ -151,6 +153,10 @@ final gestureProvider =
       (ref) => GestureStateNotifier(threshold: 104),
     );
 
+final bottomTabProvider = StateProvider<GuardianTab>(
+  (ref) => GuardianTab.status,
+);
+
 class NavigationController {
   const NavigationController();
 
@@ -246,6 +252,36 @@ class GuardianApp extends StatelessWidget {
               accent: const Color(0xFFFF6D66),
               beginOffset: const Offset(0, -0.2),
             );
+          case '/reports':
+            return _buildActionRoute(
+              settings: settings,
+              title: 'Reports',
+              subtitle:
+                  'Review incident history, response logs, and evidence captured across channels.',
+              icon: Icons.article_rounded,
+              accent: const Color(0xFFFFB476),
+              beginOffset: const Offset(0.14, 0),
+            );
+          case '/map':
+            return _buildActionRoute(
+              settings: settings,
+              title: 'Map',
+              subtitle:
+                  'Track your live location, safety perimeter, and nearby emergency resources.',
+              icon: Icons.place_rounded,
+              accent: const Color(0xFF70CEFF),
+              beginOffset: const Offset(0, 0.16),
+            );
+          case '/settings':
+            return _buildActionRoute(
+              settings: settings,
+              title: 'Settings',
+              subtitle:
+                  'Manage trusted contacts, privacy controls, and emergency automation preferences.',
+              icon: Icons.settings_rounded,
+              accent: const Color(0xFFD2D9EA),
+              beginOffset: const Offset(-0.14, 0),
+            );
           default:
             return MaterialPageRoute<void>(
               builder: (_) => const GuardianHomePage(),
@@ -302,6 +338,7 @@ class GuardianHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gesture = ref.watch(gestureProvider);
+    final activeTab = ref.watch(bottomTabProvider);
     final lockedDirection = gesture.thresholdPassed
         ? gesture.activeDirection
         : SwipeDirection.none;
@@ -335,6 +372,24 @@ class GuardianHomePage extends ConsumerWidget {
                 _GuidanceCard(
                   text: statusText,
                   activeDirection: lockedDirection,
+                ),
+                const SizedBox(height: 12),
+                GuardianBottomBar(
+                  selectedTab: activeTab,
+                  onSelected: (tab) {
+                    ref.read(bottomTabProvider.notifier).state = tab;
+                    final route = _tabRoute(tab);
+                    if (route == null) {
+                      return;
+                    }
+
+                    Navigator.of(context).pushNamed(route).whenComplete(() {
+                      if (context.mounted) {
+                        ref.read(bottomTabProvider.notifier).state =
+                            GuardianTab.status;
+                      }
+                    });
+                  },
                 ),
               ],
             ),
@@ -939,6 +994,109 @@ class _GuidanceCard extends StatelessWidget {
   }
 }
 
+class GuardianBottomBar extends StatelessWidget {
+  const GuardianBottomBar({
+    super.key,
+    required this.selectedTab,
+    required this.onSelected,
+  });
+
+  final GuardianTab selectedTab;
+  final ValueChanged<GuardianTab> onSelected;
+
+  static const List<GuardianTab> _tabs = [
+    GuardianTab.status,
+    GuardianTab.reports,
+    GuardianTab.map,
+    GuardianTab.settings,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: const Color(0xF2090C13),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: const Color(0x24FFFFFF), width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xA1000000),
+            blurRadius: 24,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          for (final tab in _tabs)
+            Expanded(
+              child: _BottomBarTabButton(
+                tab: tab,
+                isActive: selectedTab == tab,
+                onTap: () => onSelected(tab),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomBarTabButton extends StatelessWidget {
+  const _BottomBarTabButton({
+    required this.tab,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  final GuardianTab tab;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = isActive ? Colors.white : const Color(0xFF8A8F99);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(vertical: 11),
+            decoration: BoxDecoration(
+              color: isActive ? const Color(0xFFFF554B) : Colors.transparent,
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(_tabIcon(tab), size: 27, color: foreground),
+                const SizedBox(height: 6),
+                Text(
+                  _tabLabel(tab),
+                  style: TextStyle(
+                    color: foreground,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class ActionPage extends StatelessWidget {
   const ActionPage({
     super.key,
@@ -1080,6 +1238,45 @@ String _directionTitle(SwipeDirection direction) {
       return 'Instant SOS';
     case SwipeDirection.none:
       return 'None';
+  }
+}
+
+String _tabLabel(GuardianTab tab) {
+  switch (tab) {
+    case GuardianTab.status:
+      return 'STATUS';
+    case GuardianTab.reports:
+      return 'REPORTS';
+    case GuardianTab.map:
+      return 'MAP';
+    case GuardianTab.settings:
+      return 'SETTINGS';
+  }
+}
+
+IconData _tabIcon(GuardianTab tab) {
+  switch (tab) {
+    case GuardianTab.status:
+      return Icons.error_outline_rounded;
+    case GuardianTab.reports:
+      return Icons.report_gmailerrorred_rounded;
+    case GuardianTab.map:
+      return Icons.place_outlined;
+    case GuardianTab.settings:
+      return Icons.settings_outlined;
+  }
+}
+
+String? _tabRoute(GuardianTab tab) {
+  switch (tab) {
+    case GuardianTab.status:
+      return null;
+    case GuardianTab.reports:
+      return '/reports';
+    case GuardianTab.map:
+      return '/map';
+    case GuardianTab.settings:
+      return '/settings';
   }
 }
 
