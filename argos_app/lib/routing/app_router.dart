@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/argos_tab.dart';
 import '../screens/action_page.dart';
 import '../screens/argos_home_page.dart';
+import '../screens/text_report_page.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -27,14 +28,9 @@ class AppRouter {
           beginOffset: const Offset(0, 0.2),
         );
       case AppRoutes.text:
-        return _buildActionRoute(
+        return _buildTextRoute(
           settings: settings,
           selectedTab: ArgosTab.status,
-          title: 'Text Reporting',
-          subtitle:
-              'Send a rapid text incident report with auto-attached location and timestamp.',
-          icon: Icons.sms_rounded,
-          accent: const Color(0xFFFFB476),
           beginOffset: const Offset(0.2, 0),
         );
       case AppRoutes.keyword:
@@ -120,6 +116,37 @@ class AppRouter {
         icon: icon,
         accent: accent,
       ),
+      transitionsBuilder: (_, animation, __, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: beginOffset,
+              end: Offset.zero,
+            ).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  static Route<void> _buildTextRoute({
+    required RouteSettings settings,
+    required ArgosTab selectedTab,
+    required Offset beginOffset,
+  }) {
+    return PageRouteBuilder<void>(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 320),
+      reverseTransitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (_, __, ___) => TextReportPage(selectedTab: selectedTab),
       transitionsBuilder: (_, animation, __, child) {
         final curved = CurvedAnimation(
           parent: animation,
