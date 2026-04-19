@@ -13,7 +13,7 @@ const app = createApp();
 export const api = onRequest({ region: config.gcpRegion }, app);
 
 export const classifyCrisis = onMessagePublished(
-	{ topic: "classify.requested", region: config.gcpRegion },
+	{ topic: "crisis.created", region: config.gcpRegion },
 	classifyCrisisWorker,
 );
 

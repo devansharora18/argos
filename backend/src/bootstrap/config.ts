@@ -4,6 +4,8 @@ export interface AppConfig {
 	gcpRegion: string;
 	idempotencyTtlHours: number;
 	pubsubDisabled: boolean;
+	authDisabled: boolean;
+	port: number;
 }
 
 function readNumber(name: string, fallback: number): number {
@@ -31,4 +33,6 @@ export const config: AppConfig = {
 	gcpRegion: process.env.GCP_REGION ?? "us-central1",
 	idempotencyTtlHours: readNumber("IDEMPOTENCY_TTL_HOURS", 24),
 	pubsubDisabled: readBoolean("PUBSUB_DISABLED", false),
+	authDisabled: readBoolean("AUTH_DISABLED", false),
+	port: readNumber("PORT", 8080),
 };

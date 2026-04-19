@@ -3,6 +3,7 @@ import "../integrations/firebase/admin";
 import { getAuth } from "firebase-admin/auth";
 import { AppError } from "../utils/errors";
 import { ActorClaims, isRole } from "./claimTypes";
+import { config } from "../bootstrap/config";
 
 function extractBearerToken(req: Request): string {
 	const authHeader = req.headers.authorization;
@@ -17,7 +18,39 @@ function extractBearerToken(req: Request): string {
 	return authHeader.slice("Bearer ".length).trim();
 }
 
+function parseDevClaims(req: Request): ActorClaims {
+	const roleRaw = req.header("x-dev-role") ?? "manager";
+	const tenantId = req.header("x-dev-tenant-id") ?? "tenant-dev";
+	const venueHeader =
+		req.header("x-dev-venue-ids") ??
+		req.header("x-dev-venue-id") ??
+		"venue-dev";
+	const venueIds = venueHeader
+		.split(",")
+		.map((value) => value.trim())
+		.filter((value) => value.length > 0);
+
+	if (!isRole(roleRaw)) {
+		throw new AppError({
+			code: "FORBIDDEN",
+			message: "Invalid x-dev-role header value",
+			httpStatus: 403,
+		});
+	}
+
+	return {
+		uid: req.header("x-dev-uid") ?? "dev-user",
+		role: roleRaw,
+		tenantId,
+		venueIds,
+	};
+}
+
 export async function getActorFromRequest(req: Request): Promise<ActorClaims> {
+	if (config.authDisabled) {
+		return parseDevClaims(req);
+	}
+
 	const token = extractBearerToken(req);
 	const decoded = await getAuth().verifyIdToken(token);
 

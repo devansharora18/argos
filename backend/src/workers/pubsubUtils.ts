@@ -1,6 +1,15 @@
 export function decodePubSubData(event: unknown): unknown {
-	const data = event as { data?: { message?: { data?: string } } };
-	const encoded = data.data?.message?.data;
+	const source = event as {
+		data?: { message?: { data?: string; json?: unknown } };
+		message?: { data?: string; json?: unknown };
+	};
+
+	const jsonPayload = source.data?.message?.json ?? source.message?.json;
+	if (jsonPayload !== undefined) {
+		return jsonPayload;
+	}
+
+	const encoded = source.data?.message?.data ?? source.message?.data;
 	if (!encoded) {
 		return null;
 	}
