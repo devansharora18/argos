@@ -28,7 +28,7 @@ class NavigationController {
       return;
     }
 
-    await Navigator.of(context).pushNamed(route);
+    await Navigator.of(context).pushReplacementNamed(route);
   }
 }
 
