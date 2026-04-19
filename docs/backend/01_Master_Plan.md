@@ -1,4 +1,4 @@
-## Plan: HAVEN Backend API and Documentation Master Plan
+# Plan: HAVEN Backend API and Documentation Master Plan
 
 Create a comprehensive contract-first backend API plan for HAVEN that is immediately executable by an implementation agent. The plan should produce a complete documentation package centered on OpenAPI 3.1 and supporting architecture markdown, with a clear split between MVP delivery and production hardening. The design must align with existing HAVEN architecture decisions, preserve the event-driven orchestration model, and include edge sync contracts for Jetson offline resilience.
 
@@ -194,9 +194,9 @@ Create a comprehensive contract-first backend API plan for HAVEN that is immedia
 
 **Relevant files**
 
-- d:/devansharora18/argos/docs/HAVEN_Master_Plan.md - primary architecture source for crisis lifecycle, roles, data models, and escalation logic.
-- d:/devansharora18/argos/README.md - repository baseline context.
-- d:/devansharora18/argos/argos_app/README.md - current application baseline indicating implementation gap and need for contract-first docs.
+- docs/HAVEN_Master_Plan.md - primary architecture source for crisis lifecycle, roles, data models, and escalation logic.
+- README.md - repository baseline context.
+- argos_app/README.md - current application baseline indicating implementation gap and need for contract-first docs.
 
 **Verification**
 

@@ -124,21 +124,22 @@ This is intentionally architecture-first and team-facing. Code-level details, in
 
 ## 8. Internal Event Pipeline (High-Level)
 
-1. crisis.created -> extraction.requested
-2. extraction.completed -> classification.requested
-3. classification.completed -> orchestration.requested
+1. crisis.created -> crisis.frames.requested
+2. crisis.frames.completed -> classify.requested
+3. classify.completed -> orchestration.requested
 4. orchestration.completed -> dispatch.requested and guest.notify.requested
 5. dispatch.completed -> timeline.updated
 6. scheduler.tick -> escalation.check.requested
 7. crisis.resolved -> debrief.requested
 
-Each event must include:
+Each event must include the canonical event envelope fields:
 
-- schemaVersion
-- eventId
-- correlationId
-- crisisId
-- producedAt
+- schema_version
+- event_id
+- correlation_id
+- idempotency_key
+- crisis_id
+- produced_at
 
 ## 9. Security and Access Model
 

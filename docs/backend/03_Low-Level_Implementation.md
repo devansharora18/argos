@@ -149,7 +149,7 @@ backend/
 
 ### 4.1 Shared Field Rules
 
-1. IDs: lower_snake_case UUID or ULID strings.
+1. IDs: field names are lower_snake_case; identifier values SHOULD be UUID or ULID strings (prefer lowercase for consistency).
 2. Timestamps: RFC3339 UTC string in API layer, Firestore Timestamp at repository layer.
 3. Severity: integer 1..5.
 4. Confidence: number 0.0..1.0.
