@@ -11,7 +11,7 @@ class SOSRadialController extends ConsumerWidget {
 
   static const double _controllerSize = 360;
   static const double _buttonSize = 228;
-  static const double _activationRadius = 116;
+  static const double _activationRadius = gestureActivationThreshold - 8;
   static const double _maxVisualDrag = 150;
 
   @override
