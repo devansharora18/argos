@@ -16,12 +16,12 @@ paths:
       operationId: getHealth
       summary: Health probe
       responses:
-        "200":
+        '200':
           description: Service is healthy
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthResponse"
+                $ref: '#/components/schemas/HealthResponse'
 
   /api/v1/crises/report:
     post:
@@ -41,50 +41,50 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PostReportRequest"
+              $ref: '#/components/schemas/PostReportRequest'
       responses:
-        "201":
+        '201':
           description: Crisis draft created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PostReportResponse"
-        "200":
+                $ref: '#/components/schemas/PostReportResponse'
+        '200':
           description: Idempotent replay response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PostReportResponse"
-        "400":
+                $ref: '#/components/schemas/PostReportResponse'
+        '400':
           description: Validation or request contract error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
-        "401":
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
           description: Missing or invalid token
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
-        "403":
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
           description: Role or venue access denied
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
-        "409":
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
           description: Idempotency conflict or in-progress equivalent request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
-        "500":
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
+                $ref: '#/components/schemas/ErrorEnvelope'
 
   /api/v1/crises/{crisisId}:
     get:
@@ -99,18 +99,18 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Crisis details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CrisisResponse"
-        "404":
+                $ref: '#/components/schemas/CrisisResponse'
+        '404':
           description: Crisis not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
+                $ref: '#/components/schemas/ErrorEnvelope'
 
   /api/v1/crises/{crisisId}/timeline:
     get:
@@ -132,12 +132,12 @@ paths:
             minimum: 1
             maximum: 500
       responses:
-        "200":
+        '200':
           description: Crisis timeline
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineResponse"
+                $ref: '#/components/schemas/TimelineResponse'
 
   /api/v1/crises/{crisisId}/assignment:
     get:
@@ -157,18 +157,18 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Assignment record
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AssignmentResponse"
-        "404":
+                $ref: '#/components/schemas/AssignmentResponse'
+        '404':
           description: Assignment not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelope"
+                $ref: '#/components/schemas/ErrorEnvelope'
 
   /api/v1/personnel/me:
     get:
@@ -183,12 +183,12 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Personnel profile
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonnelProfileResponse"
+                $ref: '#/components/schemas/PersonnelProfileResponse'
 
   /api/v1/personnel/me/status:
     patch:
@@ -201,14 +201,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchMyStatusRequest"
+              $ref: '#/components/schemas/PatchMyStatusRequest'
       responses:
-        "200":
+        '200':
           description: Status updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PatchMyStatusResponse"
+                $ref: '#/components/schemas/PatchMyStatusResponse'
 
 components:
   securitySchemes:
@@ -358,7 +358,7 @@ components:
         events:
           type: array
           items:
-            $ref: "#/components/schemas/TimelineEvent"
+            $ref: '#/components/schemas/TimelineEvent'
 
     AssignmentResponse:
       type: object
@@ -412,7 +412,7 @@ components:
         status:
           type: string
         current_assignment:
-          type: ["string", "null"]
+          type: ['string', 'null']
 
     PatchMyStatusRequest:
       type: object
@@ -471,4 +471,4 @@ components:
             details:
               type: array
               items:
-                $ref: "#/components/schemas/ErrorDetail"
+                $ref: '#/components/schemas/ErrorDetail'

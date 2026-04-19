@@ -4,13 +4,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - '8080:8080'
     env_file:
       - .env
     environment:
-      AUTH_DISABLED: "true"
-      PUBSUB_DISABLED: "true"
-      FIRESTORE_EMULATOR_HOST: "firestore-emulator:8081"
+      AUTH_DISABLED: 'true'
+      PUBSUB_DISABLED: 'true'
+      FIRESTORE_EMULATOR_HOST: 'firestore-emulator:8081'
     depends_on:
       - firestore-emulator
 
@@ -22,4 +22,4 @@ services:
       - |
         gcloud beta emulators firestore start --host-port=0.0.0.0:8081 --quiet
     ports:
-      - "8081:8081"
+      - '8081:8081'

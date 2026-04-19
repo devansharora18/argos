@@ -1,5 +1,5 @@
-import { RequestContext } from "../../contracts/api/common";
+import { RequestContext } from '../../contracts/api/common';
 
 export interface RequestLocals {
-	ctx: RequestContext;
+  ctx: RequestContext;
 }

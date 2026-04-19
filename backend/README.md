@@ -12,9 +12,9 @@ Production-first backend scaffold for HAVEN using Firebase Functions Gen2 + Fire
 
 1. Copy `.env.example` to `.env` and adjust values.
 2. Start API + Firestore emulator with Docker Compose:
- `docker compose up --build`
+   `docker compose up --build`
 3. Or run Firebase emulators directly:
- `pnpm run start`
+   `pnpm run start`
 
 ## Quality checks
 
