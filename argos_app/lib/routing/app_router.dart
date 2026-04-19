@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/argos_tab.dart';
 import '../screens/action_page.dart';
 import '../screens/argos_home_page.dart';
+import '../screens/instant_sos_page.dart';
 import '../screens/keyword_reporting_page.dart';
 import '../screens/map_alert_page.dart';
 import '../screens/reports_status_page.dart';
@@ -39,14 +40,9 @@ class AppRouter {
           beginOffset: const Offset(-0.2, 0),
         );
       case AppRoutes.sos:
-        return _buildActionRoute(
+        return _buildSosRoute(
           settings: settings,
           selectedTab: ArgosTab.status,
-          title: 'Instant SOS',
-          subtitle:
-              'Immediate distress broadcast sent. Stay visible and keep this screen active.',
-          icon: Icons.warning_amber_rounded,
-          accent: const Color(0xFFFF6D66),
           beginOffset: const Offset(0, -0.2),
         );
       case AppRoutes.reports:
@@ -256,6 +252,37 @@ class AppRouter {
       reverseTransitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (_, __, ___) =>
           KeywordReportingPage(selectedTab: selectedTab),
+      transitionsBuilder: (_, animation, __, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: beginOffset,
+              end: Offset.zero,
+            ).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  static Route<void> _buildSosRoute({
+    required RouteSettings settings,
+    required ArgosTab selectedTab,
+    required Offset beginOffset,
+  }) {
+    return PageRouteBuilder<void>(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 320),
+      reverseTransitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (_, __, ___) => InstantSosPage(selectedTab: selectedTab),
       transitionsBuilder: (_, animation, __, child) {
         final curved = CurvedAnimation(
           parent: animation,
