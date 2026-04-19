@@ -1,0 +1,187 @@
+openapi: 3.1.0
+info:
+  title: HAVEN Backend API
+  version: 1.0.0
+  description: Contract-first external API for HAVEN crisis orchestration backend.
+servers:
+  - url: https://{region}-{project}.cloudfunctions.net/api
+    variables:
+      region:
+        default: us-central1
+      project:
+        default: haven-dev
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Health probe
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /api/v1/crises/report:
+    post:
+      operationId: postCrisisReport
+      summary: Submit a new crisis report
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostReportRequest"
+      responses:
+        "201":
+          description: Crisis draft created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostReportResponse"
+        "200":
+          description: Idempotent replay response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostReportResponse"
+        "400":
+          description: Validation or request contract error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "403":
+          description: Role or venue access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "409":
+          description: Idempotency conflict or in-progress equivalent request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+        - timestamp
+      properties:
+        status:
+          type: string
+          const: ok
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    PostReportRequest:
+      type: object
+      required:
+        - venue_id
+        - floor
+      properties:
+        venue_id:
+          type: string
+          minLength: 1
+        floor:
+          type: string
+          minLength: 1
+        zone:
+          type: string
+          minLength: 1
+        report_text:
+          type: string
+          minLength: 1
+        audio_uri:
+          type: string
+          format: uri
+        trigger_sources:
+          type: array
+          items:
+            type: string
+            minLength: 1
+      oneOf:
+        - required: [report_text]
+        - required: [audio_uri]
+    PostReportResponse:
+      type: object
+      required:
+        - crisis_id
+        - status
+        - correlation_id
+      properties:
+        crisis_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          const: detected
+        correlation_id:
+          type: string
+    ErrorDetail:
+      type: object
+      required:
+        - issue
+      properties:
+        field:
+          type: string
+        issue:
+          type: string
+    ErrorEnvelope:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - retryable
+            - correlation_id
+            - details
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlation_id:
+              type: string
+            details:
+              type: array
+              items:
+                $ref: "#/components/schemas/ErrorDetail"
