@@ -25,7 +25,7 @@ This backend supports two deployment modes:
 
 ## Environment setup
 
-1. Copy `.env.example` to `.env`.
+1. Copy `example.env` to `.env`.
 2. For production, keep:
    - `AUTH_DISABLED=false`
    - `PUBSUB_DISABLED=false`
@@ -119,7 +119,7 @@ gcloud projects add-iam-policy-binding <project-id> \
 Run from `backend/`:
 
 ```bash
-cp .env.example .env
+cp example.env .env
 docker compose up --build
 ```
 
