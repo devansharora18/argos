@@ -12,6 +12,10 @@ export async function getTelemetrySummaryHandler(
   requireRole(actor, ['staff', 'manager', 'admin']);
 
   const venueId = req.params.venueId;
+  if (!venueId) {
+    res.status(400).json({ error: 'venueId is required' } as any);
+    return;
+  }
   requireVenueScope(actor, venueId);
 
   const query = req.query as unknown as TelemetrySummaryQuery;
