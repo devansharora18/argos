@@ -5,8 +5,10 @@ import { createApp } from './bootstrap/app';
 import { config } from './bootstrap/config';
 import { classifyCrisisWorker } from './workers/classifyCrisis';
 import { dispatchToStaffWorker } from './workers/dispatchToStaff';
+import { ingestEdgeDetectionWorker } from './workers/ingestEdgeDetection';
 import { monitorEscalationWorker } from './workers/monitorEscalation';
 import { orchestrateResponseWorker } from './workers/orchestrateResponse';
+import { replayEdgeBatchWorker } from './workers/replayEdgeBatch';
 
 const app = createApp();
 
@@ -25,6 +27,16 @@ export const orchestrateResponse = onMessagePublished(
 export const dispatchToStaff = onMessagePublished(
   { topic: 'dispatch.requested', region: config.gcpRegion },
   dispatchToStaffWorker
+);
+
+export const ingestEdgeDetection = onMessagePublished(
+  { topic: 'edge.detected', region: config.gcpRegion },
+  ingestEdgeDetectionWorker
+);
+
+export const replayEdgeBatch = onMessagePublished(
+  { topic: 'edge.replay.requested', region: config.gcpRegion },
+  replayEdgeBatchWorker
 );
 
 export const monitorEscalation = onSchedule(
