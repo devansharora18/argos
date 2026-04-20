@@ -1,0 +1,47 @@
+{
+  "name": "haven-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "packageManager": "pnpm@10.7.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "firebase emulators:start --config firebase.json --only functions,firestore,pubsub",
+    "start:server": "node lib/server.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:contract": "vitest run tests/contract",
+    "test:emulator": "vitest run tests/emulator",
+    "openapi:check": "vitest run tests/contract/openapi.contract.test.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^4.8.0",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^5.1.1",
+    "firebase-tools": "^15.15.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.10",
+    "@types/supertest": "^6.0.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.5.3",
+    "supertest": "^7.1.1",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.9",
+    "yaml": "^2.7.1"
+  }
+}

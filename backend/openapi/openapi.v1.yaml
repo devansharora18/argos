@@ -1,0 +1,474 @@
+openapi: 3.1.0
+info:
+  title: HAVEN Backend API
+  version: 1.0.0
+  description: Contract-first external API for HAVEN crisis orchestration backend.
+servers:
+  - url: https://{region}-{project}.cloudfunctions.net/api
+    variables:
+      region:
+        default: us-central1
+      project:
+        default: haven-dev
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Health probe
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/crises/report:
+    post:
+      operationId: postCrisisReport
+      summary: Submit a new crisis report
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostReportRequest'
+      responses:
+        '201':
+          description: Crisis draft created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostReportResponse'
+        '200':
+          description: Idempotent replay response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostReportResponse'
+        '400':
+          description: Validation or request contract error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Role or venue access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency conflict or in-progress equivalent request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/crises/{crisisId}:
+    get:
+      operationId: getCrisis
+      summary: Get a crisis by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: crisisId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Crisis details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrisisResponse'
+        '404':
+          description: Crisis not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/crises/{crisisId}/timeline:
+    get:
+      operationId: getCrisisTimeline
+      summary: Get crisis timeline events
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: crisisId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+      responses:
+        '200':
+          description: Crisis timeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimelineResponse'
+
+  /api/v1/crises/{crisisId}/assignment:
+    get:
+      operationId: getCrisisAssignment
+      summary: Get assignment for the requesting staff or target staff_id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: crisisId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: staff_id
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assignment record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponse'
+        '404':
+          description: Assignment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/personnel/me:
+    get:
+      operationId: getMyPersonnelProfile
+      summary: Get authenticated personnel profile for a venue
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: venue_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Personnel profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonnelProfileResponse'
+
+  /api/v1/personnel/me/status:
+    patch:
+      operationId: patchMyStatus
+      summary: Update authenticated staff status
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchMyStatusRequest'
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchMyStatusResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, service, timestamp]
+      properties:
+        status:
+          type: string
+          const: ok
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    PostReportRequest:
+      type: object
+      required: [venue_id, floor]
+      properties:
+        venue_id:
+          type: string
+          minLength: 1
+        floor:
+          type: string
+          minLength: 1
+        zone:
+          type: string
+          minLength: 1
+        report_text:
+          type: string
+          minLength: 1
+        audio_uri:
+          type: string
+          format: uri
+        trigger_sources:
+          type: array
+          items:
+            type: string
+            minLength: 1
+      oneOf:
+        - required: [report_text]
+        - required: [audio_uri]
+
+    PostReportResponse:
+      type: object
+      required: [crisis_id, status, correlation_id]
+      properties:
+        crisis_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          const: detected
+        correlation_id:
+          type: string
+
+    CrisisResponse:
+      type: object
+      required:
+        - crisis_id
+        - venue_id
+        - status
+        - crisis_type
+        - severity
+        - confidence
+        - floor
+        - detected_at
+        - trigger_sources
+      properties:
+        crisis_id:
+          type: string
+        venue_id:
+          type: string
+        status:
+          type: string
+        crisis_type:
+          type: string
+        severity:
+          type: integer
+        confidence:
+          type: number
+        floor:
+          type: string
+        zone:
+          type: string
+        detected_at:
+          type: string
+          format: date-time
+        trigger_sources:
+          type: array
+          items:
+            type: string
+        report_text:
+          type: string
+        audio_uri:
+          type: string
+          format: uri
+        classified_at:
+          type: string
+          format: date-time
+        dispatched_at:
+          type: string
+          format: date-time
+        resolved_at:
+          type: string
+          format: date-time
+        gemini_reasoning:
+          type: string
+
+    TimelineEvent:
+      type: object
+      required: [event_id, event, type, timestamp]
+      properties:
+        event_id:
+          type: string
+        event:
+          type: string
+        type:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        actor_id:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        note:
+          type: string
+
+    TimelineResponse:
+      type: object
+      required: [crisis_id, venue_id, events]
+      properties:
+        crisis_id:
+          type: string
+        venue_id:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+
+    AssignmentResponse:
+      type: object
+      required:
+        - crisis_id
+        - venue_id
+        - dispatch_id
+        - staff_id
+        - instruction
+        - status
+        - assigned_at
+      properties:
+        crisis_id:
+          type: string
+        venue_id:
+          type: string
+        dispatch_id:
+          type: string
+        staff_id:
+          type: string
+        instruction:
+          type: string
+        status:
+          type: string
+        assigned_at:
+          type: string
+          format: date-time
+
+    PersonnelProfileResponse:
+      type: object
+      required:
+        - staff_id
+        - venue_id
+        - role
+        - on_shift
+        - status
+        - current_assignment
+      properties:
+        staff_id:
+          type: string
+        venue_id:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        floor:
+          type: string
+        on_shift:
+          type: boolean
+        status:
+          type: string
+        current_assignment:
+          type: ['string', 'null']
+
+    PatchMyStatusRequest:
+      type: object
+      required: [venue_id, status]
+      properties:
+        venue_id:
+          type: string
+        status:
+          type: string
+          enum: [available, responding, on_scene, need_help, resolved, unavailable, off_shift]
+        crisis_id:
+          type: string
+        note:
+          type: string
+
+    PatchMyStatusResponse:
+      type: object
+      required: [staff_id, venue_id, status, correlation_id]
+      properties:
+        staff_id:
+          type: string
+        venue_id:
+          type: string
+        status:
+          type: string
+        crisis_id:
+          type: string
+        correlation_id:
+          type: string
+
+    ErrorDetail:
+      type: object
+      required: [issue]
+      properties:
+        field:
+          type: string
+        issue:
+          type: string
+
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, retryable, correlation_id, details]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlation_id:
+              type: string
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'

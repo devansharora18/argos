@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+	match /databases/{database}/documents {
+		function isSignedIn() {
+			return request.auth != null;
+		}
+
+		function hasRole(role) {
+			return isSignedIn() && request.auth.token.role == role;
+		}
+
+		function isStaffOrHigher() {
+			return isSignedIn() && (
+				request.auth.token.role == "staff" ||
+				request.auth.token.role == "manager" ||
+				request.auth.token.role == "admin" ||
+				request.auth.token.role == "service"
+			);
+		}
+
+		function inVenue(venueId) {
+			return request.auth.token.role == "admin" ||
+				request.auth.token.role == "service" ||
+				(venueId in request.auth.token.venue_ids);
+		}
+
+		match /idempotency/{docId} {
+			allow read, write: if hasRole("service") || hasRole("admin");
+		}
+
+		match /venues/{venueId} {
+			allow read: if isStaffOrHigher() && inVenue(venueId);
+			allow write: if hasRole("admin") || hasRole("service");
+
+			match /personnel/{staffId} {
+				allow read: if isStaffOrHigher() && inVenue(venueId);
+				allow update: if (
+					hasRole("staff") && request.auth.uid == staffId && inVenue(venueId)
+				) || hasRole("manager") || hasRole("admin") || hasRole("service");
+				allow create, delete: if hasRole("admin") || hasRole("service");
+			}
+
+			match /crises/{crisisId} {
+				allow read: if isStaffOrHigher() && inVenue(venueId);
+				allow write: if hasRole("service") || hasRole("admin") || hasRole("manager");
+
+				match /timeline/{eventId} {
+					allow read: if isStaffOrHigher() && inVenue(venueId);
+					allow write: if hasRole("service") || hasRole("admin") || hasRole("manager");
+				}
+
+				match /dispatch/{dispatchId} {
+					allow read: if isStaffOrHigher() && inVenue(venueId);
+					allow write: if hasRole("service") || hasRole("admin") || hasRole("manager");
+				}
+			}
+		}
+
+		match /incident_reports/{reportId} {
+			allow read: if isStaffOrHigher();
+			allow write: if hasRole("service") || hasRole("admin");
+		}
+
+		match /{document=**} {
+			allow read, write: if false;
+		}
+	}
+}
