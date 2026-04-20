@@ -1,5 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-cd backend || exit 1
-pnpm exec lint-staged
+pnpm --filter haven-backend exec lint-staged
