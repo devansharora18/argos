@@ -70,13 +70,13 @@ This document describes how to run the backend locally for development (recommen
    pnpm start:server
    ```
 
-   - You can also pass the key inline with `GOOGLE_APPLICATION_CREDENTIALS_JSON`.
-   - Backend credential selection logic:
-     - If `FIREBASE_USE_EMULATOR=true`, emulator endpoints are always used.
-     - If `FIREBASE_USE_EMULATOR=false`, real Firestore/Auth is always used.
-     - If `FIREBASE_USE_EMULATOR` is not set, service-account credentials (`GOOGLE_APPLICATION_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS_JSON`) take precedence over emulator host env vars.
+  - You can also pass the key inline with `GOOGLE_APPLICATION_CREDENTIALS_JSON`.
+  - Backend credential selection logic:
+    - If `FIREBASE_USE_EMULATOR=true`, emulator endpoints are always used.
+    - If `FIREBASE_USE_EMULATOR=false`, real Firestore/Auth is always used.
+    - If `FIREBASE_USE_EMULATOR` is not set, service-account credentials (`GOOGLE_APPLICATION_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS_JSON`) take precedence over emulator host env vars.
 
-   Or in Bash:
+  Or in Bash:
 
    ```bash
    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
