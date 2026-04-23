@@ -22,4 +22,17 @@ void main() {
     expect(find.text('MISSION DIRECTIVE'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Response page renders without layout exceptions', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: ArgosStaffApp()));
+
+    await tester.tap(find.text('RESPONSE'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('RESPONDING - FLOOR 3 FIRE'), findsOneWidget);
+    expect(find.text('TACTICAL COMMANDS'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
