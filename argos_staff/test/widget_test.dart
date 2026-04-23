@@ -35,4 +35,17 @@ void main() {
     expect(find.text('TACTICAL COMMANDS'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Debrief page renders without layout exceptions', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: ArgosStaffApp()));
+
+    await tester.tap(find.text('DEBRIEF'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('INCIDENT RESOLVED'), findsOneWidget);
+    expect(find.text('AI POST-ACTION DEBRIEF'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
