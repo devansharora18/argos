@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/staff_tab.dart';
 import '../screens/ops_dashboard_page.dart';
+import '../screens/ops_dispatch_page.dart';
 import '../screens/ops_placeholder_page.dart';
 import 'app_routes.dart';
 
@@ -19,12 +20,7 @@ class AppRouter {
         return _buildRoute(
           settings: settings,
           beginOffset: const Offset(0.16, 0),
-          child: const OpsPlaceholderPage(
-            selectedTab: StaffTab.dispatch,
-            title: 'Dispatch Queue',
-            subtitle: 'Incoming triage and unit assignment will appear here.',
-            icon: Icons.warning_amber_rounded,
-          ),
+          child: const OpsDispatchPage(),
         );
       case AppRoutes.response:
         return _buildRoute(

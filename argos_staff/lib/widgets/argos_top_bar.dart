@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ArgosTopBar extends StatelessWidget {
-  const ArgosTopBar({super.key});
+  const ArgosTopBar({
+    super.key,
+    this.showProfileAvatar = true,
+    this.notificationColor = const Color(0xFF8A90A0),
+  });
+
+  final bool showProfileAvatar;
+  final Color notificationColor;
 
   @override
   Widget build(BuildContext context) {
@@ -31,30 +38,32 @@ class ArgosTopBar extends StatelessWidget {
               ),
             ),
           ),
-          const Icon(
+          Icon(
             Icons.notifications_none_rounded,
             size: 30,
-            color: Color(0xFF8A90A0),
+            color: notificationColor,
           ),
-          const SizedBox(width: 14),
-          Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xFF2A1A1B),
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF544C58), width: 1.2),
-            ),
-            child: const Text(
-              'JD',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFFEDEEF3),
+          if (showProfileAvatar) ...[
+            const SizedBox(width: 14),
+            Container(
+              width: 50,
+              height: 50,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A1A1B),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF544C58), width: 1.2),
+              ),
+              child: const Text(
+                'JD',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFEDEEF3),
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

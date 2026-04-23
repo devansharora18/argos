@@ -10,10 +10,14 @@ class ArgosScreenShell extends StatelessWidget {
     super.key,
     required this.selectedTab,
     required this.child,
+    this.showProfileInTopBar = true,
+    this.notificationColor = const Color(0xFF8A90A0),
   });
 
   final StaffTab selectedTab;
   final Widget child;
+  final bool showProfileInTopBar;
+  final Color notificationColor;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,13 @@ class ArgosScreenShell extends StatelessWidget {
       backgroundColor: const Color(0xFF06070D),
       body: Column(
         children: [
-          const SafeArea(bottom: false, child: ArgosTopBar()),
+          SafeArea(
+            bottom: false,
+            child: ArgosTopBar(
+              showProfileAvatar: showProfileInTopBar,
+              notificationColor: notificationColor,
+            ),
+          ),
           Expanded(child: child),
           ArgosBottomBar(
             selectedTab: selectedTab,

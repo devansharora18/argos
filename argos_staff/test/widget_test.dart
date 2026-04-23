@@ -10,4 +10,16 @@ void main() {
     expect(find.text('ON SHIFT'), findsOneWidget);
     expect(find.text('LIVE INCIDENT FEED'), findsOneWidget);
   });
+
+  testWidgets('Dispatch page renders without layout exceptions', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: ArgosStaffApp()));
+
+    await tester.tap(find.text('DISPATCH'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('MISSION DIRECTIVE'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
