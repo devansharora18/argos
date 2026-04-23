@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at 20% -10%, #1d2331 0%, #090b12 38%);
+  color: #ddd7dd;
+}
