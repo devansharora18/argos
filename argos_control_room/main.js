@@ -2,6 +2,7 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
 const createWindow = () => {
+  const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
   const mainWindow = new BrowserWindow({
     width: 1680,
     height: 980,
@@ -23,7 +24,12 @@ const createWindow = () => {
     mainWindow.show();
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
+  if (isDev) {
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
+    return;
+  }
+
+  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 };
 
 app.whenReady().then(() => {
