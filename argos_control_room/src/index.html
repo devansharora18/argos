@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Argos Control Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="top-bar">
+        <div class="brand-block">
+          <div class="shield-glyph">A</div>
+          <div class="brand-lines">
+            <div class="brand-main">ARGOS</div>
+            <div class="brand-sub">CONTROL ROOM</div>
+          </div>
+        </div>
+
+        <div class="incident-ribbon">
+          <div class="ribbon-chip ribbon-chip-danger">ACTIVE INCIDENT</div>
+          <div class="ribbon-text">FIRE - FLOOR 3, EAST WING</div>
+          <div class="ribbon-chip ribbon-chip-outline" id="severityChip">
+            SEV 4 / 5
+          </div>
+        </div>
+
+        <div class="top-meta">
+          <div class="clock" id="liveClock">14:42:09</div>
+          <div class="nodes" id="nodesOnline">247 NODES ONLINE</div>
+          <button class="icon-button" id="alertButton" aria-label="Alerts">
+            !
+          </button>
+          <div class="operator-pill">JD</div>
+        </div>
+      </header>
+
+      <main class="workspace-grid">
+        <aside class="left-panel panel-frame">
+          <section>
+            <h3 class="section-kicker">UNITS</h3>
+            <ul class="nav-list">
+              <li class="nav-item active">INCIDENT LOG</li>
+              <li class="nav-item">COMMS</li>
+              <li class="nav-item">DEPLOYMENT</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 class="section-kicker">PERSONNEL ON SHIFT</h3>
+            <ul class="personnel-list">
+              <li class="person-row">
+                <span class="person-name">John D.</span>
+                <span class="person-tag danger">RESPONDING</span>
+              </li>
+              <li class="person-row">
+                <span class="person-name">Sarah M.</span>
+                <span class="person-tag ok">AVAILABLE</span>
+              </li>
+              <li class="person-row">
+                <span class="person-name">Rajan K.</span>
+                <span class="person-tag route">EN ROUTE</span>
+              </li>
+              <li class="person-row muted">
+                <span class="person-name">Mike T.</span>
+                <span class="person-tag">OFF DUTY</span>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 class="section-kicker">INCIDENT LOG</h3>
+            <ul class="log-list" id="incidentLog">
+              <li>[14:41] Thermal anomaly detected in Sector E-3.</li>
+              <li>[14:40] Smoke detectors activated Floor 3 East.</li>
+              <li>[14:38] System heartbeat nominal.</li>
+              <li>[14:15] Routine shift change completed.</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="center-panel panel-frame">
+          <div class="floor-tabs" role="tablist" aria-label="Floor tabs">
+            <button class="floor-tab active" data-floor="B1">B1</button>
+            <button class="floor-tab" data-floor="1">1</button>
+            <button class="floor-tab" data-floor="2">2</button>
+            <button class="floor-tab" data-floor="3">3</button>
+            <button class="floor-tab" data-floor="4">4</button>
+            <button class="floor-tab" data-floor="5">5</button>
+          </div>
+
+          <div class="map-stage">
+            <svg
+              class="map-svg"
+              viewBox="0 0 780 620"
+              preserveAspectRatio="xMidYMid meet"
+              aria-label="Live floor map"
+            >
+              <rect x="18" y="18" width="744" height="584" class="map-shell" />
+              <rect x="64" y="66" width="652" height="488" class="map-core" />
+              <line x1="64" y1="310" x2="716" y2="310" class="map-grid" />
+              <line x1="390" y1="66" x2="390" y2="554" class="map-grid" />
+              <rect x="110" y="115" width="95" height="78" class="map-room" />
+              <rect x="578" y="358" width="92" height="76" class="map-room" />
+
+              <path
+                id="evacPath"
+                class="evac-path"
+                d="M 170 460 L 440 460 L 440 260 L 540 260"
+              />
+
+              <circle id="originDot" cx="170" cy="460" r="8" class="origin-dot" />
+              <circle id="targetDot" cx="540" cy="260" r="10" class="target-dot" />
+              <text id="stairLabel" x="228" y="476" class="map-label-ok">
+                STAIRWELL C
+              </text>
+              <text id="roomLabel" x="518" y="228" class="map-label-alert">RM 312</text>
+              <text id="unitLabel" x="434" y="284" class="map-label-unit">JD</text>
+            </svg>
+
+            <div class="map-controls">
+              <button class="map-control" data-zoom="in" aria-label="Zoom in">+</button>
+              <button class="map-control" data-zoom="out" aria-label="Zoom out">-</button>
+            </div>
+
+            <div class="coord-pill" id="coordPill">
+              COORD: 34.0522 N, 118.2437 W | ELEV: 45M | GRID: AZ-99
+            </div>
+          </div>
+
+          <section class="layers-panel">
+            <h3>THREE-LAYER EXPERIENCE DESIGN</h3>
+            <div class="layers-table">
+              <article>
+                <h4>GUEST VIEW</h4>
+                <p>Please use Stairwell C. Stay calm.</p>
+              </article>
+              <article>
+                <h4>STAFF VIEW</h4>
+                <p>Room 312 fire. Take ext. stair B. Medical standby.</p>
+              </article>
+              <article>
+                <h4>CONTROL ROOM VIEW</h4>
+                <p>Full map, all staff threads, AI reasoning, one-tap override.</p>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <aside class="right-panel panel-frame">
+          <section class="incident-card">
+            <h2 id="incidentTitle">STRUCTURAL FIRE</h2>
+            <p id="incidentLocation">Room 312 · Floor 3 · East Wing</p>
+            <div class="pill-row">
+              <span class="data-pill danger">SEV 4/5</span>
+              <span class="data-pill">FLOOR 3</span>
+              <span class="data-pill">EAST WING</span>
+              <span class="data-pill alert" id="riskCount">47 AT RISK</span>
+            </div>
+            <div class="eta-row">
+              <span>EST TTO</span>
+              <strong id="etaValue">03:42</strong>
+            </div>
+          </section>
+
+          <section class="meta-card">
+            <h3>@ AI REASONING</h3>
+            <ul class="reasoning-list" id="reasoningList">
+              <li>Analyzing telemetry...</li>
+              <li>Stairwell A shows abnormal heat signature.</li>
+              <li>Path block detected. Rerouting egress to Stairwell C.</li>
+            </ul>
+          </section>
+
+          <section class="meta-card telemetry-card">
+            <h3>LIVE TELEMETRY</h3>
+            <dl class="telemetry-grid">
+              <dt>SMOKE PPM</dt>
+              <dd id="smokeValue">450</dd>
+              <dt>TEMP</dt>
+              <dd id="tempValue">185C</dd>
+              <dt>CO2</dt>
+              <dd id="co2Value">NORMAL</dd>
+              <dt>AUDIO</dt>
+              <dd id="audioValue">ANOMALY DETECTED</dd>
+            </dl>
+          </section>
+
+          <section class="command-grid">
+            <button class="cmd-button" data-cmd="reassign">REASSIGN</button>
+            <button class="cmd-button" data-cmd="escalate">ESCALATE</button>
+            <button class="cmd-button secondary" data-cmd="false-alarm">
+              FALSE ALARM
+            </button>
+            <button class="cmd-button danger" data-cmd="all-clear">
+              DECLARE ALL CLEAR
+            </button>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

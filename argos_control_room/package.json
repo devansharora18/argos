@@ -1,0 +1,14 @@
+{
+  "name": "argos-control-room",
+  "version": "0.1.0",
+  "description": "Electron control-room interface for Argos",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "check": "node --check main.js && node --check preload.js && node --check src/renderer.js"
+  },
+  "devDependencies": {
+    "electron": "^31.3.1"
+  }
+}
