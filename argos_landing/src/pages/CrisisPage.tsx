@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import type { ReactElement } from 'react'
 import heroImg from '../assets/hero.png'
+import { Navbar } from '../components/Navbar'
 import { ScrollReveal } from '../components/ScrollReveal'
 
 type ModelCard = {
@@ -9,8 +10,6 @@ type ModelCard = {
   icon: string
   status?: string
 }
-
-const navItems = ['TECHNOLOGY', 'SOLUTIONS', 'HARDWARE']
 
 const modelCards: ModelCard[] = [
   {
@@ -87,42 +86,7 @@ export function CrisisPage(): ReactElement {
       />
 
       <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[linear-gradient(180deg,#0a0b10_0%,#090a0f_100%)]">
-        <header className="border-b border-white/[0.04] px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto flex h-20 w-full items-center justify-between">
-            <div className="flex items-center gap-12">
-              <a href="#/crisis" className="font-display text-xl font-semibold tracking-[0.07em] text-white">
-                ARGOS
-              </a>
-              <nav className="hidden items-center gap-9 md:flex">
-                {navItems.map((item, index) => (
-                  <a
-                    key={item}
-                    href={item === 'HARDWARE' ? '#/hardware' : '#/crisis'}
-                    className={`text-[0.65rem] font-semibold tracking-[0.2em] transition ${
-                      index === 0
-                        ? 'text-[var(--accent)]'
-                        : 'text-[#7b7f8e] hover:text-[#b5b9c7]'
-                    }`}
-                  >
-                    {item}
-                  </a>
-                ))}
-              </nav>
-            </div>
-
-            <div className="hidden items-center gap-6 md:flex">
-              <a href="#" className="text-[0.62rem] font-semibold tracking-[0.2em] text-[#9ea2b0]">
-                EMERGENCY CONTACT
-              </a>
-              <button
-                type="button"
-                className="rounded-sm border border-[var(--accent)]/55 px-5 py-2 text-[0.62rem] font-semibold tracking-[0.18em] text-[var(--accent)] transition hover:border-[var(--accent)] hover:bg-[var(--accent)]/10"
-              >
-                REQUEST DEMO
-              </button>
-            </div>
-          </div>
-        </header>
+        <Navbar />
 
         <section className="px-4 pb-16 pt-8 sm:px-6 lg:px-8 lg:pb-24 lg:pt-10">
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_576px] xl:items-stretch">

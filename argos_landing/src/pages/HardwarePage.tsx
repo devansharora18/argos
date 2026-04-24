@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import heroImg from '../assets/hero.png'
+import { Navbar } from '../components/Navbar'
 import { ScrollReveal } from '../components/ScrollReveal'
 
 type FeatureCard = {
@@ -13,8 +14,6 @@ type DeploymentItem = {
   title: string
   description: string
 }
-
-const navItems = ['TECHNOLOGY', 'SOLUTIONS', 'HARDWARE']
 
 const featureCards: FeatureCard[] = [
   {
@@ -59,45 +58,7 @@ export function HardwarePage(): ReactElement {
   return (
     <main className="relative min-h-screen overflow-x-clip bg-[var(--bg)] font-body text-[var(--text)]">
       <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[linear-gradient(180deg,#0b0c11_0%,#0a0b10_100%)]">
-        <header className="border-b border-white/[0.04] px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-8 lg:gap-12">
-              <a href="#/crisis" className="font-display text-[1.35rem] font-semibold tracking-[0.05em] text-white">
-                ARGOS
-              </a>
-              <nav className="hidden items-center gap-8 md:flex">
-                {navItems.map((item) => (
-                  <a
-                    key={item}
-                    href={item === 'HARDWARE' ? '#/hardware' : '#/crisis'}
-                    className={`text-[0.6rem] font-semibold tracking-[0.22em] transition ${
-                      item === 'HARDWARE'
-                        ? 'text-[var(--accent)] underline decoration-[var(--accent)] underline-offset-[6px]'
-                        : 'text-[#727785] hover:text-[#b4b8c4]'
-                    }`}
-                  >
-                    {item}
-                  </a>
-                ))}
-              </nav>
-            </div>
-
-            <div className="hidden items-center gap-3 md:flex">
-              <button
-                type="button"
-                className="rounded-sm border border-white/12 px-4 py-2 text-[0.58rem] font-semibold tracking-[0.2em] text-[#b7bbc7] transition hover:border-white/25 hover:text-white"
-              >
-                REQUEST DEMO
-              </button>
-              <button
-                type="button"
-                className="rounded-sm bg-[var(--accent)] px-4 py-2 text-[0.58rem] font-semibold tracking-[0.2em] text-[#1f120b] transition hover:brightness-110"
-              >
-                EMERGENCY CONTACT
-              </button>
-            </div>
-          </div>
-        </header>
+        <Navbar />
 
         <section className="px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-20">
           <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
