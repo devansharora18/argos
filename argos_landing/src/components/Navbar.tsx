@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 
 const navItems: Array<{ label: string; to: string }> = [
   { label: 'TECHNOLOGY', to: '/' },
-  { label: 'SOLUTIONS', to: '/' },
+  { label: 'SOLUTIONS', to: '/solutions' },
   { label: 'HARDWARE', to: '/hardware' },
 ]
 
