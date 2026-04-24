@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #06070a;
+  --bg: #160c07;
   --text: #f3f4f8;
   --accent: #ff6127;
 }
@@ -17,7 +17,9 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at top, rgba(255, 111, 59, 0.16), transparent 35%),
+    linear-gradient(180deg, #160c07 0%, #0d0806 100%);
   color: var(--text);
   font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;

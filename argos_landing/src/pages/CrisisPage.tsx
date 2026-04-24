@@ -75,7 +75,7 @@ export function CrisisPage(): ReactElement {
   const glowTwoY = useTransform(scrollYProgress, [0, 1], [0, -160])
 
   return (
-    <main className="relative min-h-screen overflow-x-clip bg-[var(--bg)] font-body text-[var(--text)]">
+    <main className="relative min-h-screen overflow-x-clip bg-[radial-gradient(circle_at_top,rgba(255,111,59,0.12),transparent_34%),linear-gradient(180deg,#160c07_0%,#0d0806_100%)] font-body text-[var(--text)]">
       <motion.div
         className="pointer-events-none absolute left-1/2 top-0 h-[42rem] w-[68rem] -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(255,97,39,0.22),rgba(255,97,39,0)_66%)] blur-2xl"
         style={{ y: glowOneY }}
@@ -85,7 +85,7 @@ export function CrisisPage(): ReactElement {
         style={{ y: glowTwoY }}
       />
 
-      <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[linear-gradient(180deg,#0a0b10_0%,#090a0f_100%)]">
+      <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[radial-gradient(circle_at_50%_0%,rgba(255,97,39,0.12),transparent_30%),linear-gradient(180deg,#120a08_0%,#090607_100%)]">
         <Navbar />
 
         <section className="px-4 pb-16 pt-8 sm:px-6 lg:px-8 lg:pb-24 lg:pt-10">

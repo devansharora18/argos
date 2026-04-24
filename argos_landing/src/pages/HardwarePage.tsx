@@ -56,8 +56,8 @@ const deploymentItems: DeploymentItem[] = [
 
 export function HardwarePage(): ReactElement {
   return (
-    <main className="relative min-h-screen overflow-x-clip bg-[var(--bg)] font-body text-[var(--text)]">
-      <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[linear-gradient(180deg,#0b0c11_0%,#0a0b10_100%)]">
+    <main className="relative min-h-screen overflow-x-clip bg-[radial-gradient(circle_at_top,rgba(255,111,59,0.12),transparent_34%),linear-gradient(180deg,#160c07_0%,#0d0806_100%)] font-body text-[var(--text)]">
+      <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[radial-gradient(circle_at_50%_0%,rgba(255,97,39,0.1),transparent_30%),linear-gradient(180deg,#120a08_0%,#090607_100%)]">
         <Navbar />
 
         <section className="px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-20">

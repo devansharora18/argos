@@ -4,8 +4,8 @@ import { ScrollReveal } from '../components/ScrollReveal'
 
 export function SolutionsPage(): ReactElement {
   return (
-    <main className="relative min-h-screen overflow-x-clip bg-[#050404] font-body text-[#f4f2ef]">
-      <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[radial-gradient(circle_at_50%_0%,rgba(255,117,62,0.16),transparent_32%),linear-gradient(180deg,#070605_0%,#050404_100%)]">
+    <main className="relative min-h-screen overflow-x-clip bg-[radial-gradient(circle_at_top,rgba(255,111,59,0.12),transparent_34%),linear-gradient(180deg,#160c07_0%,#0d0806_100%)] font-body text-[#f4f2ef]">
+      <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[radial-gradient(circle_at_50%_0%,rgba(255,117,62,0.2),transparent_32%),linear-gradient(180deg,#120a08_0%,#090607_100%)]">
         <Navbar />
 
         <section className="px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-14 lg:pt-10">
