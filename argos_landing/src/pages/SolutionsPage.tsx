@@ -10,12 +10,12 @@ export function SolutionsPage(): ReactElement {
       <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[radial-gradient(circle_at_50%_0%,rgba(255,117,62,0.2),transparent_32%),linear-gradient(180deg,#120a08_0%,#090607_100%)]">
         <Navbar />
 
-        <section className="px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-14 lg:pt-10">
+        <section className="min-h-screen px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-14 lg:pt-10">
           <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_500px] xl:items-start">
             <ScrollReveal>
               <div className="max-w-[620px] pt-6 xl:pt-8">
                 <p className="inline-flex items-center gap-2 rounded-sm border border-[#2d1f19] bg-[rgba(90,52,40,0.55)] px-3 py-1 text-[0.58rem] font-semibold tracking-[0.2em] text-[#f5b39e]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#f5b39e]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#f5b39e] animate-pulse" />
                   INDUSTRY SPECIFIC DEPLOYMENT
                 </p>
 
@@ -32,24 +32,24 @@ export function SolutionsPage(): ReactElement {
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <Link
                     to="/request-demo"
-                    className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110"
+                    className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110 hover:shadow-[0_0_20px_rgba(255,97,39,0.4)]"
                   >
                     REQUEST DEMO
-                    <span aria-hidden="true">{'->'}</span>
+                    <span aria-hidden="true">{'=>'}</span>
                   </Link>
                   <Link
                     to="/hardware"
-                    className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-[0.62rem] font-semibold tracking-[0.22em] text-[#d7d9e2] transition hover:text-white"
+                    className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-[0.62rem] font-semibold tracking-[0.22em] text-[#d7d9e2] transition hover:text-white hover:border-[var(--accent)]"
                   >
                     EXPLORE HARDWARE
-                    <span aria-hidden="true">{'->'}</span>
+                    <span aria-hidden="true">{'=>'}</span>
                   </Link>
                 </div>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={0.08}>
-              <div className="relative overflow-hidden rounded-md border border-white/[0.06] bg-[linear-gradient(180deg,#3a352f_0%,#1d1b19_100%)] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+              <div className="relative overflow-hidden rounded-md border border-white/[0.06] bg-[linear-gradient(180deg,#3a352f_0%,#1d1b19_100%)] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.45)] transition-transform duration-500 hover:shadow-[0_0_60px_rgba(255,97,39,0.15)]">
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,148,102,0.1),transparent_40%)]" />
                 <div className="pointer-events-none absolute left-5 top-5 h-8 w-10 border-l border-t border-[#f0a07f]/70" />
                 <div className="pointer-events-none absolute right-5 bottom-5 h-8 w-10 border-r border-b border-[#f0a07f]/70" />
@@ -65,22 +65,27 @@ export function SolutionsPage(): ReactElement {
                 </div>
                 <div className="mt-4 flex items-center justify-between text-[0.58rem] font-semibold tracking-[0.2em] text-[#f0b08f]">
                   <span>SYS_01 // ACTIVE</span>
-                  <span>LV5</span>
+                  <span className="flex items-center gap-2">
+                    LV5
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#ff9a73] animate-pulse" />
+                  </span>
                 </div>
               </div>
             </ScrollReveal>
           </div>
         </section>
 
-        <section className="px-4 pb-16 pt-2 sm:px-6 lg:px-8 lg:pb-18">
+        <section className="flex min-h-screen flex-col justify-center px-4 pb-16 pt-2 sm:px-6 lg:px-8 lg:pb-18">
           <ScrollReveal>
-            <h2 className="text-[1.65rem] font-semibold text-white sm:text-[1.9rem]">Active Sectors</h2>
-            <div className="mt-2 h-[2px] w-8 bg-[#ff8f60]" />
+            <div className="flex items-center gap-4">
+              <h2 className="text-[1.65rem] font-semibold text-white sm:text-[1.9rem]">Active Sectors</h2>
+              <div className="h-[2px] w-8 bg-[#ff8f60]" />
+            </div>
           </ScrollReveal>
 
           <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.72fr)]">
             <ScrollReveal>
-              <article className="relative overflow-hidden rounded-md border border-white/[0.06] bg-[#171615]">
+              <article className="relative overflow-hidden rounded-md border border-white/[0.06] bg-[#171615] transition-all hover:border-[#ff8f60]/40 hover:shadow-[0_0_30px_rgba(255,143,96,0.08)]">
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(0,0,0,0.55)),radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.12),transparent_42%)]" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
                 <div className="relative min-h-[312px] p-5 sm:p-6">
@@ -95,13 +100,13 @@ export function SolutionsPage(): ReactElement {
                   </p>
 
                   <div className="mt-11 grid grid-cols-2 gap-3">
-                    <div className="rounded-sm border border-white/[0.06] bg-[#101010]/80 p-4">
+                    <div className="rounded-sm border border-white/[0.06] bg-[#101010]/80 p-4 transition-colors hover:border-[#ff8f60]/30">
                       <p className="text-[0.53rem] font-semibold tracking-[0.2em] text-[#d4c6b7]">
                         DENSITY TRACKING
                       </p>
                       <p className="mt-2 font-display text-[1.35rem] text-[#f4ede7]">99.8%</p>
                     </div>
-                    <div className="rounded-sm border border-white/[0.06] bg-[#101010]/80 p-4">
+                    <div className="rounded-sm border border-white/[0.06] bg-[#101010]/80 p-4 transition-colors hover:border-[#ff8f60]/30">
                       <p className="text-[0.53rem] font-semibold tracking-[0.2em] text-[#d4c6b7]">
                         ACOUSTIC ISOLATION
                       </p>
@@ -113,7 +118,7 @@ export function SolutionsPage(): ReactElement {
             </ScrollReveal>
 
             <ScrollReveal delay={0.08}>
-              <article className="relative h-full overflow-hidden rounded-md border border-white/[0.06] bg-[linear-gradient(180deg,#141312_0%,#11100f_100%)] p-5 sm:p-6">
+              <article className="relative h-full overflow-hidden rounded-md border border-white/[0.06] bg-[linear-gradient(180deg,#141312_0%,#11100f_100%)] p-5 sm:p-6 transition-all hover:border-[#ff8f60]/40 hover:shadow-[0_0_30px_rgba(255,143,96,0.08)]">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.08),transparent_35%),linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
                 <div className="relative flex h-full min-h-[416px] flex-col justify-between">
                   <div>
@@ -131,7 +136,10 @@ export function SolutionsPage(): ReactElement {
                   <div className="border-t border-white/[0.06] pt-4 text-[0.58rem] font-semibold tracking-[0.2em] text-[#f3c0a7]">
                     <div className="flex items-center justify-between">
                       <span>EVAC EFFICIENCY</span>
-                      <span className="text-[#ff9877]">+45%</span>
+                      <span className="flex items-center gap-2 text-[#ff9877]">
+                        +45%
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#ff9877] animate-pulse" />
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -140,7 +148,7 @@ export function SolutionsPage(): ReactElement {
           </div>
 
           <ScrollReveal delay={0.12}>
-            <article className="relative mt-6 overflow-hidden rounded-md border border-white/[0.06] bg-[linear-gradient(180deg,#11100f_0%,#0d0d0d_100%)] p-5 sm:p-6">
+            <article className="relative mt-6 overflow-hidden rounded-md border border-white/[0.06] bg-[linear-gradient(180deg,#11100f_0%,#0d0d0d_100%)] p-5 sm:p-6 transition-all hover:border-[#ff8f60]/40 hover:shadow-[0_0_30px_rgba(255,143,96,0.08)]">
               <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px);background-size:22px_22px]" />
               <div className="relative flex min-h-[192px] flex-col justify-between lg:flex-row lg:items-end">
                 <div className="max-w-[700px]">
@@ -156,13 +164,13 @@ export function SolutionsPage(): ReactElement {
                 </div>
 
                 <div className="mt-8 grid grid-cols-2 gap-4 lg:mt-0 lg:min-w-[220px]">
-                  <div className="rounded-sm border border-white/[0.06] bg-[#101010]/85 p-4 text-center">
+                  <div className="rounded-sm border border-white/[0.06] bg-[#101010]/85 p-4 text-center transition-colors hover:border-[#ff8f60]/30">
                     <p className="font-display text-[1.82rem] text-white">0.05ms</p>
                     <p className="mt-1 text-[0.52rem] font-semibold tracking-[0.2em] text-[#d2c5bd]">
                       NODE SYNC
                     </p>
                   </div>
-                  <div className="rounded-sm border border-white/[0.06] bg-[#101010]/85 p-4 text-center">
+                  <div className="rounded-sm border border-white/[0.06] bg-[#101010]/85 p-4 text-center transition-colors hover:border-[#ff8f60]/30">
                     <p className="font-display text-[1.82rem] text-[#ff9a73]">10k+</p>
                     <p className="mt-1 text-[0.52rem] font-semibold tracking-[0.2em] text-[#d2c5bd]">
                       ACTIVE NODES

@@ -54,6 +54,7 @@ export function RequestDemoPage(): ReactElement {
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Submission failed.')
+      form.reset()
     }
   }
 
@@ -71,22 +72,22 @@ export function RequestDemoPage(): ReactElement {
       <div className="relative mx-auto w-full max-w-[1520px] border-x border-white/[0.04] bg-[radial-gradient(circle_at_50%_0%,rgba(255,97,39,0.12),transparent_30%),linear-gradient(180deg,#120a08_0%,#090607_100%)]">
         <Navbar />
 
-        <section className="px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-20 lg:pt-14">
-          <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] xl:items-start">
+        <section className="min-h-screen px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-20 lg:pt-14">
+          <div className="mx-auto grid max-w-[1280px] justify-center gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] xl:items-start">
             <ScrollReveal>
-              <div className="max-w-[620px]">
-                <p className="inline-flex w-fit items-center gap-2 rounded-sm bg-[#a1161a] px-3 py-1 text-[0.62rem] font-semibold tracking-[0.16em] text-white">
+              <div className="max-w-[680px]">
+                <p className="inline-flex w-fit items-center gap-2 rounded-sm bg-[#a1161a] px-3 py-1 text-[0.7rem] font-semibold tracking-[0.16em] text-white">
                   <span className="h-1.5 w-1.5 rounded-full bg-white" />
                   CLEARANCE REQUIRED
                 </p>
 
-                <h1 className="mt-7 font-display text-[3rem] font-semibold leading-[0.94] text-[#f4f5f8] sm:text-[3.8rem]">
+                <h1 className="mt-8 font-display text-[3.4rem] font-semibold leading-[0.94] text-[#f4f5f8] sm:text-[4.4rem]">
                   REQUEST A
                   <br />
                   <span className="text-[#ff9a73]">LIVE DEMO.</span>
                 </h1>
 
-                <p className="mt-6 max-w-[520px] text-[1.02rem] leading-relaxed text-[#a5a9b6]">
+                <p className="mt-7 max-w-[560px] text-[1.12rem] leading-relaxed text-[#a5a9b6]">
                   Speak with the deployment team. We will configure a sandboxed ARGOS node
                   against your operational telemetry and walk through the 7 concurrent models
                   in under 30 minutes.
