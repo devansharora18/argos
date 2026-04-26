@@ -25,7 +25,7 @@ class ArgosTopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.shield_outlined, size: 33, color: Color(0xFFFF3D52)),
+          Image.asset('assets/logo.png', width: 33, height: 33, fit: BoxFit.contain),
           const SizedBox(width: 10),
           const Expanded(
             child: Text(
