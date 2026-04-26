@@ -16,9 +16,13 @@ export function Navbar(): ReactElement {
         <div className="flex items-center gap-8 lg:gap-12">
           <Link
             to="/"
-            className="font-display text-xl font-semibold tracking-[0.07em] text-white transition hover:text-[var(--accent)]"
+            aria-label="ARGOS home"
+            className="flex items-center gap-3 transition hover:opacity-80"
           >
-            ARGOS
+            <img src="/logo.png" alt="" className="h-10 w-auto" />
+            <span className="font-display text-xl font-semibold tracking-[0.07em] text-white">
+              ARGOS
+            </span>
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             {navItems.map((item) => {

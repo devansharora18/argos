@@ -32,9 +32,10 @@ export function Footer(): ReactElement {
         <div>
           <Link
             to="/"
-            className="font-display text-[0.7rem] font-semibold tracking-[0.28em] text-[var(--accent)]"
+            aria-label="ARGOS home"
+            className="inline-flex items-center transition hover:opacity-80"
           >
-            ARGOS
+            <img src="/logo.png" alt="ARGOS" className="h-12 w-auto" />
           </Link>
           <p className="mt-4 max-w-[320px] text-[0.72rem] leading-relaxed tracking-[0.08em] text-[#7a7e8b]">
             Edge-native AI for zero-latency crisis detection. Engineered for the harshest
