@@ -18,9 +18,11 @@ export function TopBar({
   return (
     <header className="grid h-[76px] grid-cols-[280px_1fr_350px] items-center gap-2.5 border-b border-[#2d3242] bg-gradient-to-r from-[#131723] via-[#0f131f] to-[#121623] px-3.5 py-2.5 max-[1220px]:h-auto max-[1220px]:grid-cols-1 max-[1220px]:gap-2 max-[1220px]:p-2.5 max-[1480px]:grid-cols-[240px_1fr_320px]">
       <div className="flex items-center gap-2.5">
-        <div className="grid size-[34px] place-items-center rounded-lg border border-[#7b3138] font-['Orbitron'] text-lg font-extrabold text-[#ff4859]">
-          A
-        </div>
+        <img
+          src="/logo.png"
+          alt=""
+          className="size-[34px] rounded-lg object-contain"
+        />
         <div className="leading-none">
           <div className="font-['Orbitron'] text-xl tracking-[0.2em] text-[#ff4456]">
             ARGOS

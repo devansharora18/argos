@@ -12,6 +12,7 @@ const createWindow = () => {
     autoHideMenuBar: true,
     backgroundColor: '#090b12',
     title: 'Argos Control Room',
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
