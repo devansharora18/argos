@@ -1,4 +1,6 @@
 import type { ReactElement } from 'react'
+import { Link } from 'react-router-dom'
+import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { ScrollReveal } from '../components/ScrollReveal'
 
@@ -26,6 +28,23 @@ export function SolutionsPage(): ReactElement {
                 <p className="mt-5 max-w-[520px] text-[0.96rem] leading-relaxed text-[#a7a19c] sm:text-[1rem]">
                   Tailored AI deployments engineered for high-density environments. ARGOS adapts its sensory matrix to the specific kinetic signatures of your industry.
                 </p>
+
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <Link
+                    to="/request-demo"
+                    className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110"
+                  >
+                    REQUEST DEMO
+                    <span aria-hidden="true">{'->'}</span>
+                  </Link>
+                  <Link
+                    to="/hardware"
+                    className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-[0.62rem] font-semibold tracking-[0.22em] text-[#d7d9e2] transition hover:text-white"
+                  >
+                    EXPLORE HARDWARE
+                    <span aria-hidden="true">{'->'}</span>
+                  </Link>
+                </div>
               </div>
             </ScrollReveal>
 
@@ -155,32 +174,7 @@ export function SolutionsPage(): ReactElement {
           </ScrollReveal>
         </section>
 
-        <footer className="border-t border-white/[0.04] bg-[#101116] px-4 py-8 text-[0.6rem] font-semibold tracking-[0.2em] sm:px-6 lg:px-8">
-          <div className="grid gap-8 text-[#676c79] md:grid-cols-4 md:items-start">
-            <div>
-              <p className="text-[var(--accent)]">ARGOS</p>
-              <p className="mt-3 max-w-[320px] leading-relaxed">
-                © 2024 ARGOS EDGE-AI PLATFORM. MISSION CRITICAL STATUS: ACTIVE.
-              </p>
-            </div>
-            <div className="space-y-3">
-              <p>OPERATIONS</p>
-              <p>INFRASTRUCTURE</p>
-              <p>NG9-1-1 COMPLIANCE</p>
-            </div>
-            <div className="space-y-3">
-              <p>MONITORING</p>
-              <p>SYSTEM STATUS</p>
-              <p>PRIVACY PROTOCOL</p>
-            </div>
-            <div className="flex justify-start md:justify-end">
-              <div className="inline-flex items-center gap-2 rounded-sm border border-[#5c382b] bg-[rgba(98,60,44,0.45)] px-3 py-2 text-[0.55rem] font-semibold tracking-[0.2em] text-[#f4b39a]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#f4b39a]" />
-                SYSTEM ONLINE
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </main>
   )

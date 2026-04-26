@@ -1,6 +1,8 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import type { ReactElement } from 'react'
+import { Link } from 'react-router-dom'
 import heroImg from '../assets/hero.png'
+import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { ScrollReveal } from '../components/ScrollReveal'
 
@@ -37,13 +39,6 @@ const modelCards: ModelCard[] = [
     description: 'Detects dangerous gas concentrations and airborne particulate spikes.',
     icon: 'GAS',
   },
-]
-
-const footerLinks = [
-  'INFRASTRUCTURE',
-  'NG9-1-1 COMPLIANCE',
-  'SYSTEM STATUS',
-  'PRIVACY PROTOCOL',
 ]
 
 function SmallModelCard({ card, delay }: { card: ModelCard; delay: number }): ReactElement {
@@ -110,20 +105,20 @@ export function CrisisPage(): ReactElement {
                 </p>
 
                 <div className="mt-12 flex flex-wrap items-center gap-5">
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-2 border-b border-transparent pb-1 text-xs font-semibold tracking-[0.2em] text-[#8f94a3] transition hover:border-[#252936] hover:text-[#c9cdd9]"
+                  <Link
+                    to="/request-demo"
+                    className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110"
                   >
-                    DEPLOY SYSTEM
+                    REQUEST DEMO
                     <span aria-hidden="true">{'->'}</span>
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    to="/hardware"
                     className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-xs font-semibold tracking-[0.2em] text-[#d7d9e2] transition hover:text-white"
                   >
                     VIEW SPECS
-                    <span aria-hidden="true">[]</span>
-                  </a>
+                    <span aria-hidden="true">{'->'}</span>
+                  </Link>
                 </div>
               </div>
             </ScrollReveal>
@@ -222,22 +217,7 @@ export function CrisisPage(): ReactElement {
           </div>
         </section>
 
-        <footer className="px-4 pb-8 pt-16 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <p className="text-[0.62rem] font-semibold tracking-[0.2em] text-[var(--accent)]">ARGOS</p>
-            <div className="mt-10 flex flex-col gap-4 text-[0.62rem] font-semibold tracking-[0.2em] text-[#727785] sm:max-w-[300px]">
-              {footerLinks.map((item) => (
-                <a key={item} href="#" className="transition hover:text-[#b8bcc8]">
-                  {item}
-                </a>
-              ))}
-            </div>
-          </ScrollReveal>
-
-          <div className="mt-14 border-t border-white/[0.04] pt-8 text-[0.54rem] font-semibold tracking-[0.2em] text-[#5f6370]">
-            &copy; 2024 ARGOS EDGE-AI PLATFORM. MISSION CRITICAL STATUS: ACTIVE.
-          </div>
-        </footer>
+        <Footer />
       </div>
     </main>
   )

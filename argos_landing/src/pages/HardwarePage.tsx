@@ -1,5 +1,7 @@
 import type { ReactElement } from 'react'
+import { Link } from 'react-router-dom'
 import heroImg from '../assets/hero.png'
+import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { ScrollReveal } from '../components/ScrollReveal'
 
@@ -97,6 +99,16 @@ export function HardwarePage(): ReactElement {
                     </div>
                   </div>
                 </div>
+
+                <div className="mt-8">
+                  <Link
+                    to="/request-demo"
+                    className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110"
+                  >
+                    REQUEST DEMO
+                    <span aria-hidden="true">{'->'}</span>
+                  </Link>
+                </div>
               </div>
             </ScrollReveal>
 
@@ -184,24 +196,7 @@ export function HardwarePage(): ReactElement {
           </div>
         </section>
 
-        <footer className="border-t border-white/[0.04] bg-[#101116] px-4 py-8 text-[0.6rem] font-semibold tracking-[0.2em] sm:px-6 lg:px-8">
-          <div className="grid gap-8 text-[#676c79] md:grid-cols-3">
-            <div>
-              <p className="text-[var(--accent)]">ARGOS</p>
-              <p className="mt-3 max-w-[320px] leading-relaxed">
-                © 2024 ARGOS EDGE-AI PLATFORM. MISSION CRITICAL STATUS: ACTIVE.
-              </p>
-            </div>
-            <div className="space-y-3">
-              <p>INFRASTRUCTURE</p>
-              <p>NG9-1-1 COMPLIANCE</p>
-            </div>
-            <div className="space-y-3">
-              <p>SYSTEM STATUS</p>
-              <p>PRIVACY PROTOCOL</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </main>
   )
