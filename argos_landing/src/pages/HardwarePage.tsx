@@ -1,6 +1,5 @@
 import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
-import heroImg from '../assets/hero.png'
 import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { ScrollReveal } from '../components/ScrollReveal'
@@ -41,18 +40,18 @@ const featureCards: FeatureCard[] = [
 const deploymentItems: DeploymentItem[] = [
   {
     icon: '▣',
-    title: 'Stadiums & Arenas',
-    description: 'High-density crowd monitoring and anomaly detection.',
+    title: 'Malls & Retail Centers',
+    description: 'Multi-floor foot-traffic intelligence and incident isolation.',
   },
   {
     icon: '▦',
-    title: 'Smart Cities',
-    description: 'Traffic analytics and public safety incident response.',
+    title: 'Hotels & Hospitality',
+    description: 'Thermal fire detection and personalized guest evacuation routing.',
   },
   {
     icon: '✚',
-    title: 'Hospitals',
-    description: 'Perimeter security and restricted area access control.',
+    title: 'Stadiums & Arenas',
+    description: 'High-density crowd monitoring and acoustic anomaly detection.',
   },
 ]
 
@@ -120,17 +119,15 @@ export function HardwarePage(): ReactElement {
             </ScrollReveal>
 
             <ScrollReveal delay={0.08}>
-              <div className="relative overflow-hidden rounded-lg border border-white/[0.09] bg-[radial-gradient(circle_at_50%_35%,#205a76_0%,#132833_44%,#0f1720_100%)] p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:shadow-[0_0_70px_rgba(0,0,0,0.7)]">
-                <div className="pointer-events-none absolute inset-0 opacity-25 [background:linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
-                <div className="pointer-events-none absolute left-6 top-6 h-10 w-10 border-l border-t border-[#9da4ad]/60" />
-                <div className="pointer-events-none absolute bottom-6 right-6 h-10 w-10 border-b border-r border-[#9da4ad]/60" />
-
+              <div className="group relative overflow-hidden rounded-lg border border-white/[0.09] shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:shadow-[0_0_70px_rgba(0,0,0,0.7)]">
                 <img
-                  src={heroImg}
+                  src="/hardware.png"
                   alt="Argos hardware device"
-                  className="relative z-10 mx-auto w-full max-w-[350px] rounded-md object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.7)] transition-transform duration-500 hover:scale-105"
+                  className="block h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <p className="relative z-10 mt-4 text-center font-display text-3xl text-[#d7dbe4]">SAFE WORK</p>
+                <div className="pointer-events-none absolute inset-0 z-10 opacity-25 [background:linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
+                <div className="pointer-events-none absolute left-6 top-6 z-10 h-10 w-10 border-l border-t border-[#9da4ad]/60" />
+                <div className="pointer-events-none absolute bottom-6 right-6 z-10 h-10 w-10 border-b border-r border-[#9da4ad]/60" />
               </div>
             </ScrollReveal>
           </div>
@@ -164,12 +161,20 @@ export function HardwarePage(): ReactElement {
         </section>
 
         <section className="min-h-screen bg-[#05070b] px-4 py-16 sm:px-6 lg:px-8">
-          <div className="flex h-full min-h-screen items-center">
-            <div className="grid gap-10 xl:grid-cols-[520px_minmax(0,1fr)] xl:items-center">
+          <div className="mx-auto flex h-full min-h-screen w-full max-w-[1280px] items-center justify-center">
+            <div className="grid w-full gap-10 xl:grid-cols-[520px_minmax(0,1fr)] xl:items-center">
               <ScrollReveal>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="h-56 rounded-md border border-white/[0.08] bg-[linear-gradient(160deg,#5e8dac,#2f4f62_50%,#163246)] transition-transform duration-500 hover:scale-105" />
-                  <div className="h-56 rounded-md border border-white/[0.08] bg-[radial-gradient(circle_at_45%_30%,#49a0c3_0%,#18435e_40%,#0e1f2f_100%)] transition-transform duration-500 hover:scale-105" />
+                <div className="grid gap-4">
+                  <img
+                    src="/malls.png"
+                    alt="Malls and retail centers deployment"
+                    className="h-64 w-full rounded-md border border-white/[0.08] object-cover transition-transform duration-500 hover:scale-[1.02]"
+                  />
+                  <img
+                    src="/hotel.png"
+                    alt="Hotels and hospitality deployment"
+                    className="h-64 w-full rounded-md border border-white/[0.08] object-cover brightness-150 transition-transform duration-500 hover:scale-[1.02]"
+                  />
                 </div>
               </ScrollReveal>
 

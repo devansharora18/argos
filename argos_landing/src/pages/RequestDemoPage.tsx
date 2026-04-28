@@ -8,12 +8,9 @@ import { ScrollReveal } from '../components/ScrollReveal'
 const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/mail@devansharora.in'
 
 const sectorOptions = [
+  'Malls & Retail Centers',
+  'Hotels & Hospitality',
   'Stadiums & Venues',
-  'Smart City Infrastructure',
-  'Hospitality',
-  'Healthcare',
-  'Industrial / Energy',
-  'Defense & Public Safety',
   'Other',
 ]
 
