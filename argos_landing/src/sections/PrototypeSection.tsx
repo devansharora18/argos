@@ -17,7 +17,7 @@ export function PrototypeSection(): ReactElement {
             Download the latest releases from our GitHub repository, including Android client and staff apps, plus the control room application for all platforms.
           </p>
           <a
-            href="https://github.com/argos-crisis/argos/releases"
+            href="https://github.com/devansharora18/argos/releases/tag/0.0.1"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[#f0b399]/40 bg-[#f0b399]/5 px-6 py-3 text-[0.9rem] font-semibold text-[#f0b399] transition hover:border-[#f0b399]/100 hover:bg-[#f0b399]/10"

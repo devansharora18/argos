@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
-import type { ReactElement } from 'react'
+import { useEffect, type ReactElement } from 'react'
 import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { HardwareSection } from '../sections/HardwareSection'
@@ -12,6 +12,25 @@ export function Home(): ReactElement {
   const { scrollYProgress } = useScroll()
   const glowOneY = useTransform(scrollYProgress, [0, 1], [0, 180])
   const glowTwoY = useTransform(scrollYProgress, [0, 1], [0, -160])
+
+  useEffect(() => {
+    const scrollToHash = () => {
+      const hash = window.location.hash.slice(1)
+      if (!hash) return
+
+      const target = document.getElementById(hash)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+
+    scrollToHash()
+    window.addEventListener('hashchange', scrollToHash)
+
+    return () => {
+      window.removeEventListener('hashchange', scrollToHash)
+    }
+  }, [])
 
   return (
     <main className="relative min-h-screen overflow-x-clip bg-[radial-gradient(circle_at_top,rgba(255,111,59,0.12),transparent_34%),linear-gradient(180deg,#160c07_0%,#0d0806_100%)] font-body text-[var(--text)]">
