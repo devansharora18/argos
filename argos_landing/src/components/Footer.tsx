@@ -1,18 +1,17 @@
 import type { ReactElement } from 'react'
-import { Link } from 'react-router-dom'
 
 type FooterColumn = {
   heading: string
-  links: Array<{ label: string; to?: string }>
+  links: Array<{ label: string; href?: string }>
 }
 
 const footerColumns: FooterColumn[] = [
   {
     heading: 'PLATFORM',
     links: [
-      { label: 'TECHNOLOGY', to: '/' },
-      { label: 'SOLUTIONS', to: '/solutions' },
-      { label: 'HARDWARE', to: '/hardware' },
+      { label: 'TECHNOLOGY', href: '#technology' },
+      { label: 'SOLUTIONS', href: '#solutions' },
+      { label: 'HARDWARE', href: '#hardware' },
     ],
   },
   {
@@ -30,13 +29,13 @@ export function Footer(): ReactElement {
     <footer className="border-t border-white/[0.06] bg-[linear-gradient(180deg,#101116_0%,#0a0a0e_100%)] px-4 py-12 sm:px-6 lg:px-8">
       <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)] md:items-start">
         <div>
-          <Link
-            to="/"
+          <a
+            href="#technology"
             aria-label="ARGOS home"
             className="inline-flex items-center transition hover:opacity-80"
           >
             <img src="/logo.png" alt="ARGOS" className="h-12 w-auto" />
-          </Link>
+          </a>
           <p className="mt-4 max-w-[320px] text-[0.72rem] leading-relaxed tracking-[0.08em] text-[#7a7e8b]">
             Edge-native AI for zero-latency crisis detection. Engineered for the harshest
             environments, deployed where it matters most.
@@ -55,15 +54,12 @@ export function Footer(): ReactElement {
             <ul className="space-y-3 text-[0.6rem] font-semibold tracking-[0.2em] text-[#727785]">
               {column.links.map((link) => (
                 <li key={link.label}>
-                  {link.to ? (
-                    <Link to={link.to} className="transition hover:text-[#b8bcc8]">
-                      {link.label}
-                    </Link>
-                  ) : (
-                    <a href="#" className="transition hover:text-[#b8bcc8]">
-                      {link.label}
-                    </a>
-                  )}
+                  <a
+                    href={link.href ?? '#'}
+                    className="transition hover:text-[#b8bcc8]"
+                  >
+                    {link.label}
+                  </a>
                 </li>
               ))}
             </ul>
