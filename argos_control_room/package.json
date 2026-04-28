@@ -7,6 +7,10 @@
     "start": "npm run build && electron .",
     "dev": "concurrently -k \"vite\" \"wait-on http://127.0.0.1:5173 && cross-env ELECTRON_RENDERER_URL=http://127.0.0.1:5173 electron .\"",
     "build": "vite build",
+    "package:linux": "npm run build && electron-builder --linux AppImage",
+    "package:win": "npm run build && electron-builder --win nsis",
+    "package:mac": "npm run build && electron-builder --mac dmg",
+    "package:all": "npm run build && electron-builder -mwl",
     "check": "tsc --noEmit && node --check main.js && node --check preload.js"
   },
   "dependencies": {
@@ -25,6 +29,32 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
-    "wait-on": "^8.0.1"
+    "wait-on": "^8.0.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.argos.controlroom",
+    "productName": "ARGOS Control Room",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "linux": {
+      "target": ["AppImage"],
+      "artifactName": "argos-control-room.${ext}"
+    },
+    "win": {
+      "target": ["nsis"],
+      "artifactName": "argos-control-room.${ext}"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "artifactName": "argos-control-room.${ext}"
+    }
   }
 }

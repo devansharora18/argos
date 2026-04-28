@@ -4,9 +4,10 @@ const navItems: Array<{ label: string; href: string }> = [
   { label: 'TECHNOLOGY', href: '#technology' },
   { label: 'SOLUTIONS', href: '#solutions' },
   { label: 'HARDWARE', href: '#hardware' },
+  { label: 'PROTOTYPE', href: '#prototype' },
 ]
 
-const sectionIds = ['technology', 'solutions', 'hardware', 'request-demo']
+const sectionIds = ['technology', 'solutions', 'hardware', 'prototype', 'request-demo']
 
 export function Navbar(): ReactElement {
   const [activeSection, setActiveSection] = useState<string>('technology')
@@ -67,6 +68,12 @@ export function Navbar(): ReactElement {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <a
+            href="#prototype"
+            className="rounded-sm border border-white/15 px-4 py-2 text-[0.58rem] font-semibold tracking-[0.2em] text-[#d7d9e2] transition hover:border-[var(--accent)] hover:text-white"
+          >
+            PROTOTYPE
+          </a>
           <a
             href="#request-demo"
             className="rounded-sm bg-[var(--accent)] px-4 py-2 text-[0.58rem] font-semibold tracking-[0.2em] text-[#1f120b] transition hover:brightness-110"

@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { HardwareSection } from '../sections/HardwareSection'
+import { PrototypeSection } from '../sections/PrototypeSection'
 import { RequestDemoSection } from '../sections/RequestDemoSection'
 import { SolutionsSection } from '../sections/SolutionsSection'
 import { TechnologySection } from '../sections/TechnologySection'
@@ -28,6 +29,7 @@ export function Home(): ReactElement {
         <TechnologySection />
         <SolutionsSection />
         <HardwareSection />
+        <PrototypeSection />
         <RequestDemoSection />
         <Footer />
       </div>
