@@ -16,3 +16,7 @@ String resolveBackendBaseUrl() {
 Uri simStreamUri() {
   return Uri.parse('${resolveBackendBaseUrl()}/api/v1/sim/events/stream');
 }
+
+Uri simTriggerUri() {
+  return Uri.parse('${resolveBackendBaseUrl()}/api/v1/sim/trigger');
+}
