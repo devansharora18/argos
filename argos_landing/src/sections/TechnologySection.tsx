@@ -1,13 +1,12 @@
 import {
-  Activity,
   ArrowRight,
-  Droplets,
-  HeartPulse,
-  Radio,
-  ShieldCheck,
-  Thermometer,
-  Wind,
+  Brain,
+  Mic,
+  Eye,
+  MessageSquare,
+  AlertOctagon,
   Zap,
+  ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
 import type { ReactElement } from 'react'
@@ -22,29 +21,29 @@ type ModelCard = {
 
 const modelCards: ModelCard[] = [
   {
-    title: 'Thermal Anomalies',
+    title: 'Gemini Flash Classification',
     description:
-      'Detects rapid temperature spikes and early-stage combustion via IR sensor fusion.',
-    Icon: Thermometer,
-    status: 'ACTIVE',
+      'Multi-modal crisis analysis combining text reports, voice transcripts, and camera frames to classify crisis type and severity in real-time.',
+    Icon: Brain,
+    status: 'LIVE',
   },
   {
-    title: 'Medical Distress',
+    title: 'Gemini Pro Orchestration',
     description:
-      'Identifies irregular movement patterns indicative of falls, seizures, or physical distress.',
-    Icon: HeartPulse,
-    status: 'ACTIVE',
+      'AI Incident Commander reasoning engine that generates multi-dispatch decisions, guest notifications, and escalation recommendations.',
+    Icon: AlertOctagon,
+    status: 'LIVE',
   },
   {
-    title: 'Fluid Contamination',
+    title: 'Cloud Vision Analysis',
     description:
-      'Spectrometric analysis of local water supplies for immediate contamination alerts.',
-    Icon: Droplets,
+      'Real-time frame analysis extracting person counts, fire/smoke detection, security threats, and scene context for situational awareness.',
+    Icon: Eye,
   },
   {
-    title: 'Atmospheric Toxins',
-    description: 'Detects dangerous gas concentrations and airborne particulate spikes.',
-    Icon: Wind,
+    title: 'Speech-to-Text Processing',
+    description: 'Accurate voice-to-text transcription supporting Indian English, Hindi, and US English with fallback support.',
+    Icon: Mic,
   },
 ]
 
@@ -82,19 +81,17 @@ export function TechnologySection(): ReactElement {
             <div className="flex flex-col justify-center py-8 xl:min-h-[640px] xl:py-0">
               <div className="inline-flex w-fit items-center gap-2 rounded-sm bg-[#a1161a] px-3 py-1 text-[0.62rem] font-semibold tracking-[0.16em] text-white">
                 <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                MISSION CRITICAL STATUS: ACTIVE
+                AI PIPELINE: LIVE
               </div>
 
               <h1 className="mt-9 max-w-[620px] font-display text-[3.75rem] font-semibold leading-[0.92] text-[#f4f5f8] sm:text-[4.2rem]">
-                CRISIS DETECTION
+                MULTI-MODAL 
                 <br />
-                AT THE EDGE.
+                AI REASONING.
               </h1>
 
               <p className="mt-7 max-w-[560px] text-[1.05rem] leading-relaxed text-[#a5a9b6]">
-                90MS LATENCY. ZERO INTERNET. The ARGOS platform operates entirely
-                off-grid, deploying 7 concurrent AI models directly on tactical hardware to
-                analyze mission-critical telemetry instantly.
+                Gemini Flash classification + Gemini Pro orchestration. Combined with Cloud Vision and Speech-to-Text to create unified crisis intelligence across text, voice, and video inputs.
               </p>
 
               <div className="mt-12 flex flex-wrap items-center gap-5">
@@ -106,19 +103,19 @@ export function TechnologySection(): ReactElement {
                   <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
                 <a
-                  href="#hardware"
+                  href="#solutions"
                   className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-xs font-semibold tracking-[0.2em] text-[#d7d9e2] transition hover:text-white hover:border-[var(--accent)]"
                 >
-                  VIEW SPECS
+                  VIEW PIPELINE
                   <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
               </div>
 
               <div className="mt-12 grid grid-cols-3 gap-6 sm:grid-cols-4">
-                <Stat label="MODELS" value="7" />
-                <Stat label="LATENCY" value="90MS" />
-                <Stat label="COVERAGE" value="24/7" />
-                <Stat label="UPTIME" value="99.9%" />
+                <Stat label="AI MODELS" value="4" />
+                <Stat label="MODALITIES" value="3" />
+                <Stat label="LATENCY" value="<5S" />
+                <Stat label="LANGUAGES" value="3" />
               </div>
             </div>
           </ScrollReveal>
@@ -127,14 +124,14 @@ export function TechnologySection(): ReactElement {
             <div className="relative min-h-[440px] overflow-hidden rounded-xl border border-white/8 bg-[#0c0d12] sm:min-h-[560px] xl:h-[640px] xl:min-h-0 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
               <img
                 src="/argos.png"
-                alt="Argos edge compute board"
+                alt="ARGOS AI Pipeline"
                 className="absolute left-1/2 top-1/2 h-[115%] w-[115%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 transition-transform duration-700 hover:scale-105"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,7,10,0.52),rgba(6,7,10,0.3)_36%,rgba(6,7,10,0.58))]" />
 
               <div className="absolute left-6 right-6 top-6 flex items-center justify-between text-[0.55rem] font-semibold tracking-[0.18em] text-[#c3c8d7]">
-                <span>SYS_ID: ARG-20-NVIDIA</span>
-                <span className="text-right leading-relaxed">LATENCY: 87.4MS<br />TEMP: 42 C</span>
+                <span>SYSTEM: ARGOS_AI_PIPELINE</span>
+                <span className="text-right leading-relaxed">STATUS: OPERATIONAL<br />CONCURRENCY: 4 MODELS</span>
               </div>
 
               <div className="absolute bottom-6 left-6 h-14 w-36 rounded-sm border border-white/12 bg-[#08090d]/72 p-2">
@@ -160,14 +157,13 @@ export function TechnologySection(): ReactElement {
       <section className="flex min-h-screen flex-col justify-center border-y border-white/[0.04] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <ScrollReveal>
           <p className="text-[0.64rem] font-semibold tracking-[0.22em] text-[#cc9a84]">
-            CORE INTELLIGENCE
+            AI INTELLIGENCE LAYER
           </p>
           <h2 className="mt-4 font-display text-[3rem] font-semibold leading-[0.95] text-[#f4f5f8] sm:text-[3.4rem]">
-            THE 7 CONCURRENT MODELS
+            THE 4 CORE AI MODELS
           </h2>
           <p className="mt-5 max-w-[700px] text-[1.02rem] leading-relaxed text-[#9da1af]">
-            Processing disparate visual, thermal, and acoustic data streams simultaneously
-            without relying on cloud infrastructure.
+            Powered by Google Gemini and Google Cloud APIs. Classification and orchestration happen in parallel, providing sub-5-second crisis response decisions across all input modalities.
           </p>
         </ScrollReveal>
 
@@ -179,14 +175,13 @@ export function TechnologySection(): ReactElement {
             <article className="group relative flex h-full flex-col rounded-xl border border-white/6 bg-[#14161d]/92 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_30px_rgba(255,97,39,0.08)] sm:p-7">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f0b399] transition-colors group-hover:border-[var(--accent)]/30">
-                <Activity className="h-5 w-5" strokeWidth={1.5} />
+                <MessageSquare className="h-5 w-5" strokeWidth={1.5} />
               </div>
               <h3 className="mt-5 max-w-[460px] font-display text-[1.85rem] leading-tight text-[#f2f3f7] transition-colors group-hover:text-[#ff9a73] sm:text-[2rem]">
-                Seismic and Structural Integrity
+                Multi-Modal Fusion
               </h3>
               <p className="mt-3 max-w-[450px] text-[0.93rem] leading-relaxed text-[#9498a7] transition-colors group-hover:text-[#b0b5c7] sm:text-sm">
-                Continuous micro-vibration analysis to detect early earthquake tremors and
-                structural fatigue in critical infrastructure before visible failure occurs.
+                Crisis reports can be submitted as text, voice audio, camera frames, or any combination thereof. All modalities are analyzed in parallel to provide the AI with complete situational context before making classification and dispatch decisions.
               </p>
 
               <div className="mt-auto pt-8">
@@ -202,7 +197,7 @@ export function TechnologySection(): ReactElement {
                       >
                         {index === 4 ? (
                           <span className="absolute -top-5 left-1/2 -translate-x-1/2 rounded-[2px] bg-[#cf1e26] px-1.5 py-0.5 text-[0.5rem] font-bold tracking-[0.16em] text-white shadow-lg">
-                            ALERT
+                            DETECTED
                           </span>
                         ) : null}
                       </div>
@@ -223,18 +218,18 @@ export function TechnologySection(): ReactElement {
           <ScrollReveal>
             <div className="grid gap-8 md:grid-cols-3">
               <FeatureBlock
-                title="ZERO-LATENCY INFERENCE"
-                description="All 7 AI models process data locally, eliminating network delays."
+                title="MULTI-MODAL INPUT"
+                description="Text, voice, camera frames, or any combination analyzed in parallel."
                 Icon={Zap}
               />
               <FeatureBlock
-                title="OFF-GRID OPERATION"
-                description="Fully autonomous operation with no cloud dependency required."
-                Icon={Radio}
+                title="AI ORCHESTRATION"
+                description="Gemini Pro creates multi-dispatch decisions, not just single static routes."
+                Icon={Brain}
               />
               <FeatureBlock
-                title="INDUSTRIAL GRADE"
-                description="Engineered for extreme conditions and mission-critical reliability."
+                title="CLOUD-NATIVE SCALE"
+                description="Google APIs ensure classification and orchestration latency under 5 seconds."
                 Icon={ShieldCheck}
               />
             </div>

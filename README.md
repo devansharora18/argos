@@ -56,15 +56,29 @@ Hospitality crises often suffer from a "clarity problem" rather than an informat
 
 ## 🛠 Current Implementation
 
-The project is currently in the **substantiated prototype phase**, with a robust event-driven backend and four polished frontend surfaces. Each surface runs independently against seeded/simulated data; live wiring between surfaces is the next milestone.
+The project is in **full intelligence tier**, with AI-driven crisis classification and orchestration now live. The event-driven backend powers real-time crisis detection, multi-modal analysis, and AI reasoning, while four frontend surfaces deliver different role-appropriate views of the crisis.
 
-### 1. Backend (The Orchestration Engine)
-Located in `/backend`, the server-side logic is built with **Node.js/Express** and heavily utilizes **Firebase/Google Cloud** services.
-- **Event-Driven Architecture:** Uses Google Cloud Pub/Sub to decouple ingestion, classification, and orchestration.
-- **Crisis Classification:** Currently implemented using a regex-based keyword matching system in `classifyCrisis.ts`, designed to be replaced by multi-modal ML models.
-- **Response Orchestration:** A heuristic-based engine in `orchestrateResponse.ts` that calculates the nearest available personnel based on role suitability (e.g., routing a Fire Marshal to a smoke report).
-- **Workers:** `ingestEdgeDetection`, `classifyCrisis`, `orchestrateResponse`, `dispatchToStaff`, `monitorEscalation`, `replayEdgeBatch`.
-- **Repositories & Contracts:** Strong typing with Zod schemas, a versioned OpenAPI spec (`backend/openapi/openapi.v1.yaml`), and clear repository patterns for Crisis and Personnel data.
+### 1. Backend (The AI-Powered Orchestration Engine)
+Located in `/backend`, the server-side logic is built with **Node.js/Express** and deeply integrates **Firebase/Google Cloud** with **Gemini AI**.
+
+**AI/ML Pipeline:**
+- **Crisis Classification (Gemini 2.5 Flash):** Multi-modal analysis combining text reports, voice transcripts (Speech-to-Text), and camera frames (Cloud Vision API) to automatically classify crisis type (fire, medical, security, stampede, structural), severity (1–5), and confidence scores.
+- **Response Orchestration (Gemini 2.5 Pro):** Full incident commander reasoning that generates:
+  - Multi-dispatch decisions routing specialized personnel to the crisis
+  - Guest notifications tailored to affected floors and crisis type
+  - Control room summaries with alternatives considered
+  - External escalation recommendations (fire dept, ambulance, police)
+- **Visual Intelligence (Cloud Vision API):** Detects person count, fire/smoke signals, security threats, and scene context from camera frames.
+- **Voice Reports (Google Speech-to-Text):** Transcribes guest/staff audio reports in Indian English with Hindi/US fallbacks before classification.
+- **FCM Push Notifications:** Sends high-priority dispatches to staff devices and guest broadcasts.
+
+**Event-Driven Architecture:** Uses Google Cloud Pub/Sub to decouple ingestion, classification, orchestration, and dispatch into a resilient multi-stage pipeline.
+
+**Workers:** `classifyCrisis` (Gemini Flash → classification), `orchestrateResponse` (Gemini Pro → dispatch plan), `dispatchToStaff` (FCM → staff), `notifyGuests` (FCM broadcast), plus escalation monitoring and edge replay.
+
+**Resilience:** Fallback to proximity-based single-dispatch if Gemini is unavailable; pipeline never stops.
+
+**Repositories & Contracts:** Strong typing with Zod schemas, versioned OpenAPI spec (`backend/openapi/openapi.v1.yaml`), and clear repository patterns for Crisis, Personnel, and Venue data.
 
 ### 2. Landing Site (Public Marketing Surface)
 Located in `/argos_landing`, built with **React + Vite + Tailwind + Framer Motion**.
@@ -95,7 +109,7 @@ Flutter application for on-the-ground responders.
 - **Backend:** Node.js, Express, TypeScript, Firebase Functions, Cloud Firestore, Cloud Pub/Sub, Zod, OpenAPI.
 - **Frontends:** Flutter (mobile guest + staff), React + Vite + Tailwind (landing + Electron control room), Framer Motion.
 - **Tooling:** pnpm workspaces, Vitest (backend), ESLint + Prettier, Husky.
-- **AI/ML:** 
+- **AI/ML:** Google Gemini 2.5 Flash (classification), Gemini 2.5 Pro (orchestration), Cloud Vision API (frame analysis), Google Speech-to-Text (voice transcription), Firebase Cloud Messaging (dispatch + guest notifications).
 
 ---
 
@@ -103,7 +117,7 @@ Flutter application for on-the-ground responders.
 
 The project follows a 4-phase implementation plan as outlined in the [Master Project Plan](docs/HAVEN_Master_Plan.md).
 
-### ✅ Phase 1: Foundation (Current Status)
+### ✅ Phase 1: Foundation (Completed)
 - [x] Firebase Infrastructure setup.
 - [x] Event-driven backend scaffold.
 - [x] Basic heuristic-based classification and routing.
@@ -112,21 +126,25 @@ The project follows a 4-phase implementation plan as outlined in the [Master Pro
 - [x] Public landing site with marketing pages and demo intake.
 - [x] Brand system (logo + adaptive launcher icons across all surfaces).
 
-### ⏳ Phase 2: Intelligence Layer (Next Steps)
-- [ ] **AI integration:** Replace heuristics with an AI model for deep contextual reasoning.
-- [ ] **Multi-Modal Fusion:** Integrate Cloud Vision API and Speech-to-Text for advanced crisis extraction.
-- [ ] **Decision Justification:** Implement "Explainable AI" panels showing Gemini's reasoning.
-- [ ] **Client ↔ Backend Wiring:** Connect Flutter apps and the control room to the live backend over the OpenAPI contract.
+### ✅ Phase 2: Intelligence Layer (Completed)
+- [x] **AI integration:** Gemini 2.5 Flash for classification, Gemini 2.5 Pro for orchestration.
+- [x] **Multi-Modal Fusion:** Cloud Vision API for frame analysis, Speech-to-Text for voice reports.
+- [x] **Decision Justification:** Gemini reasoning, alternatives considered, and control room summaries.
+- [x] **Firebase Cloud Messaging:** FCM staff dispatch and guest broadcast notifications.
+- [x] **Fallback Resilience:** Proximity-based fallback when Gemini is unavailable.
+- [x] **Firestore Demo Seed:** Complete venue with personnel, routes, and equipment.
 
-### 🎨 Phase 3: Real-time UI Polish
-- [ ] **CustomPainter Maps:** Implement high-performance animated maps in Flutter.
-- [ ] **Pulse Animations:** Add visual crisis indicators and staff threads to the dashboard.
-- [ ] **FCM Integration:** Live push notifications for staff dispatch.
+### ⏳ Phase 3: Real-time UI Polish & Client Wiring
+- [ ] **CustomPainter Maps:** High-performance animated floor maps in Flutter.
+- [ ] **Pulse Animations:** Visual crisis indicators and staff location threads.
+- [ ] **Live Backend Wiring:** Connect guest/staff apps and control room to the live API over OpenAPI contract.
+- [ ] **Crisis Timeline Streams:** Real-time Firestore subscriptions for crisis updates.
 
-### 📡 Phase 4: Edge Layer & Demo
-- [ ] **Jetson Deployment:** Local ML inference for offline resilience.
+### 📡 Phase 4: Edge Layer & Production Hardening
+- [ ] **Jetson Deployment:** Local NVIDIA Jetson Orin Nano inference for offline resilience.
 - [ ] **Offline Mode:** SQLite-based event queuing for internet-outage scenarios.
-- [ ] **Post-Incident Debrief:** Automated report generation using Gemini.
+- [ ] **Post-Incident Debrief:** Automated report generation and analytics using Gemini.
+- [ ] **Production Scaling:** Load testing, observability dashboards, and SLO compliance.
 
 ---
 

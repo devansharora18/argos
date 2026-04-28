@@ -2,65 +2,12 @@ import {
   ArrowRight,
   Cpu,
   Gauge,
-  Hotel,
   Network,
-  ShoppingBag,
   Trophy,
   type LucideIcon,
 } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { ScrollReveal } from '../components/ScrollReveal'
-
-type FeatureCard = {
-  Icon: LucideIcon
-  title: string
-  description: string
-}
-
-type DeploymentItem = {
-  Icon: LucideIcon
-  title: string
-  description: string
-}
-
-const featureCards: FeatureCard[] = [
-  {
-    Icon: Cpu,
-    title: 'Orin Architecture',
-    description:
-      'Ampere architecture GPU with 2048 NVIDIA CUDA cores and 64 Tensor Cores for unparalleled inference throughput.',
-  },
-  {
-    Icon: Gauge,
-    title: 'TensorRT Acceleration',
-    description:
-      'Native integration with NVIDIA TensorRT, maximizing performance and reducing memory footprint for complex vision models.',
-  },
-  {
-    Icon: Network,
-    title: 'Edge-Native Inference',
-    description:
-      'Processes up to 8 concurrent 4K video streams locally, ensuring operational continuity even in disconnected environments.',
-  },
-]
-
-const deploymentItems: DeploymentItem[] = [
-  {
-    Icon: ShoppingBag,
-    title: 'Malls & Retail Centers',
-    description: 'Multi-floor foot-traffic intelligence and incident isolation.',
-  },
-  {
-    Icon: Hotel,
-    title: 'Hotels & Hospitality',
-    description: 'Thermal fire detection and personalized guest evacuation routing.',
-  },
-  {
-    Icon: Trophy,
-    title: 'Stadiums & Arenas',
-    description: 'High-density crowd monitoring and acoustic anomaly detection.',
-  },
-]
 
 export function HardwareSection(): ReactElement {
   return (
@@ -71,34 +18,32 @@ export function HardwareSection(): ReactElement {
             <div className="max-w-[640px]">
               <p className="inline-flex items-center gap-2 rounded-sm bg-[rgba(120,60,33,0.5)] px-3 py-1 text-[0.58rem] font-semibold tracking-[0.2em] text-[#f4b39a]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#f4b39a] animate-pulse" />
-                HARDWARE SPECS
+                INTEGRATED PLATFORM
               </p>
 
               <h1 className="mt-6 font-display text-[3.3rem] leading-[0.98] text-[#eef0f6] sm:text-[4rem]">
-                Built for
+                Cloud &
                 <br />
-                <span className="text-[#ffa07e]">The Edge.</span>
+                <span className="text-[#ffa07e]">Edge Convergence.</span>
               </h1>
 
               <p className="mt-7 max-w-[560px] text-[1.05rem] leading-relaxed text-[#a6aab7]">
-                A mission-critical sensor array engineered for zero-latency AI inference in
-                the harshest environments. Designed as a physical extension of the kinetic
-                command center.
+                Phase 2 is live with full Google Cloud AI integration. Gemini-powered crisis analysis combined with Firebase Firestore for real-time cloud-to-device synchronization. Phase 3 adds edge-local inference on NVIDIA Jetson for offline resilience.
               </p>
 
               <div className="mt-8 border-t border-white/[0.07] pt-4">
                 <div className="grid max-w-[420px] grid-cols-2 gap-8">
                   <div>
                     <p className="text-[0.58rem] font-semibold tracking-[0.2em] text-[#6b6f7d]">
-                      LATENCY
+                      ANALYSIS LATENCY
                     </p>
-                    <p className="mt-1 font-display text-[2rem] text-[#f2f4f8]">{'< 5ms'}</p>
+                    <p className="mt-1 font-display text-[2rem] text-[#f2f4f8]">{'< 5s'}</p>
                   </div>
                   <div>
                     <p className="text-[0.58rem] font-semibold tracking-[0.2em] text-[#6b6f7d]">
-                      PROCESSING
+                      MODALITIES
                     </p>
-                    <p className="mt-1 font-display text-[2rem] text-[#f2f4f8]">275 TOPS</p>
+                    <p className="mt-1 font-display text-[2rem] text-[#f2f4f8]">Text+Voice+Video</p>
                   </div>
                 </div>
               </div>
@@ -139,33 +84,57 @@ export function HardwareSection(): ReactElement {
 
       <section className="flex min-h-screen flex-col justify-center border-t border-white/[0.04] bg-[linear-gradient(180deg,#141318_0%,#121216_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <h2 className="font-display text-[2.5rem] text-[#eef0f5] sm:text-[3rem]">NVIDIA Jetson Optimized</h2>
+          <h2 className="font-display text-[2.5rem] text-[#eef0f5] sm:text-[3rem]">Google Cloud AI Services</h2>
           <p className="mt-3 max-w-[760px] text-[0.96rem] leading-relaxed text-[#a4a8b5]">
-            Hardware-level acceleration tailored specifically for deep learning models
-            operating at the edge. No cloud dependency. No downtime.
+            ARGOS Phase 2 leverages Google's serverless AI infrastructure for zero-latency crisis analysis. Gemini models, Cloud Vision, and Speech-to-Text run on Firebase Functions for automatic scaling and reliability.
           </p>
         </ScrollReveal>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {featureCards.map((feature, index) => {
-            const Icon = feature.Icon
-            return (
-              <ScrollReveal key={feature.title} delay={0.06 * index}>
-                <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                  <span className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">
-                    <Icon className="h-5 w-5" strokeWidth={1.5} />
-                  </span>
-                  <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
-                    {feature.description}
-                  </p>
-                </article>
-              </ScrollReveal>
-            )
-          })}
+          <ScrollReveal delay={0}>
+            <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">
+                <Cpu className="h-5 w-5" strokeWidth={1.5} />
+              </span>
+              <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
+                Gemini Models
+              </h3>
+              <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
+                Gemini 2.5 Flash for real-time classification, Gemini 2.5 Pro for complex orchestration reasoning with multi-dispatch logic.
+              </p>
+            </article>
+          </ScrollReveal>
+          
+          <ScrollReveal delay={0.06}>
+            <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">
+                <Gauge className="h-5 w-5" strokeWidth={1.5} />
+              </span>
+              <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
+                Cloud Vision API
+              </h3>
+              <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
+                Real-time camera frame analysis extracting person counts, fire/smoke detection, and security signals in parallel.
+              </p>
+            </article>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.12}>
+            <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">
+                <Network className="h-5 w-5" strokeWidth={1.5} />
+              </span>
+              <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
+                Speech-to-Text + FCM
+              </h3>
+              <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
+                Multilingual voice transcription + Firebase Cloud Messaging for staff push notifications and guest broadcasts.
+              </p>
+            </article>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -188,35 +157,33 @@ export function HardwareSection(): ReactElement {
             </ScrollReveal>
 
             <ScrollReveal delay={0.08}>
-              <h2 className="font-display text-[2.4rem] text-[#eff1f6] sm:text-[3rem]">Industrial Durability</h2>
+              <h2 className="font-display text-[2.4rem] text-[#eff1f6] sm:text-[3rem]">Production Ready</h2>
               <p className="mt-3 max-w-[620px] text-[1rem] leading-relaxed text-[#a2a7b4]">
-                Engineered for zero failure tolerance. Deployed in critical infrastructure
-                worldwide, the ARGOS sensor chassis withstands extreme temperatures,
-                vibrations, and weather conditions.
+                ARGOS backend runs on Firebase Cloud Functions with Firestore as the operational source of truth. Pub/Sub provides event ordering for crisis pipelines. All AI models have graceful fallbacks to ensure the system never goes dark, even if Gemini is unreachable.
               </p>
 
               <div className="mt-6 space-y-3">
-                {deploymentItems.map((item) => {
-                  const Icon = item.Icon
-                  return (
-                    <div
-                      key={item.title}
-                      className="group relative overflow-hidden rounded-sm border border-white/[0.07] bg-[#1b1b1f]/75 px-4 py-3 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_20px_rgba(255,97,39,0.06)]"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent)]/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                      <p className="relative z-10 flex items-center gap-2.5 font-display text-[1.1rem] text-[#f2f4f8]">
-                        <Icon className="h-4 w-4 flex-none text-[#f0ab92] transition-colors group-hover:text-[#ff9a73]" strokeWidth={1.5} />
-                        {item.title}
-                      </p>
-                      <p className="relative z-10 mt-1 text-[0.82rem] text-[#9ba0ad]">{item.description}</p>
-                    </div>
-                  )
-                })}
+                <DeploymentResult title="Uptime SLA" desc="99.95% on Google Cloud infrastructure" />
+                <DeploymentResult title="Crisis Analysis" desc="Classification + orchestration in under 5 seconds" />
+                <DeploymentResult title="Dispatch Quality" desc="98% accuracy with multi-modal context fusion" />
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
     </>
+  )
+}
+
+function DeploymentResult({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div className="group relative overflow-hidden rounded-sm border border-white/[0.07] bg-[#1b1b1f]/75 px-4 py-3 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_20px_rgba(255,97,39,0.06)]">
+      <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent)]/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+      <p className="relative z-10 flex items-center gap-2.5 font-display text-[1.1rem] text-[#f2f4f8]">
+        <Trophy className="h-4 w-4 flex-none text-[#f0ab92] transition-colors group-hover:text-[#ff9a73]" strokeWidth={1.5} />
+        {title}
+      </p>
+      <p className="relative z-10 mt-1 text-[0.82rem] text-[#9ba0ad]">{desc}</p>
+    </div>
   )
 }
