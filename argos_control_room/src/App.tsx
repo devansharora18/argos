@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { ActiveCrisisBanner } from './components/control-room/ActiveCrisisBanner';
 import { CenterPanel } from './components/control-room/CenterPanel';
 import { LeftPanel } from './components/control-room/LeftPanel';
 import { RightPanel } from './components/control-room/RightPanel';
 import { ToastStack } from './components/control-room/ToastStack';
 import { TopBar } from './components/control-room/TopBar';
 import { floorState } from './data/controlRoomData';
+import { useCrisisStream, type IncomingCrisis } from './hooks/useCrisisStream';
 import type { FloorKey, TelemetrySnapshot, Toast } from './types/controlRoom';
 import { formatClock, mutateValue } from './utils/controlRoom';
 
@@ -18,6 +20,7 @@ export default function App(): JSX.Element {
     () => ({ ...floorState['3'].telemetry }),
   );
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [activeCrisis, setActiveCrisis] = useState<IncomingCrisis | null>(null);
 
   const activeSnapshot = floorState[activeFloor];
 
@@ -29,6 +32,18 @@ export default function App(): JSX.Element {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 2600);
   }, []);
+
+  const handleIncomingCrisis = useCallback(
+    (crisis: IncomingCrisis) => {
+      setActiveCrisis(crisis);
+      pushToast(
+        `${crisis.crisis_type.toUpperCase()} · ${crisis.zone} · severity ${crisis.severity}`,
+      );
+    },
+    [pushToast],
+  );
+
+  useCrisisStream({ onCrisis: handleIncomingCrisis });
 
   useEffect(() => {
     setTelemetry({ ...floorState[activeFloor].telemetry });
@@ -123,6 +138,10 @@ export default function App(): JSX.Element {
           />
         </main>
       </div>
+
+      {activeCrisis ? (
+        <ActiveCrisisBanner crisis={activeCrisis} onDismiss={() => setActiveCrisis(null)} />
+      ) : null}
 
       <ToastStack toasts={toasts} />
     </div>
