@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import { config } from './config';
 import { errorHandler, notFoundHandler } from '../http/middleware/errorHandler';
@@ -10,6 +11,7 @@ import { personnelRoutes } from '../http/routes/personnelRoutes';
 export function createApp(): express.Express {
   const app = express();
 
+  app.use(cors());
   app.use(express.json({ limit: '2mb' }));
   app.use(requestContextMiddleware);
 

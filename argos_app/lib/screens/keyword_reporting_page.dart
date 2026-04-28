@@ -3,12 +3,41 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../models/argos_tab.dart';
+import '../screens/crisis_result_page.dart';
 import '../widgets/argos_screen_shell.dart';
+
+// ---------------------------------------------------------------------------
+// Report texts sent to HAVEN for each keyword card tap.
+// Realistic enough for Gemini to classify accurately.
+// ---------------------------------------------------------------------------
+const _kReportTexts = {
+  'Medical':
+      'Guest has collapsed and is unresponsive near the pool area. Bystanders attempting CPR. Requires immediate medical attention.',
+  'Police':
+      'Violent altercation in progress at the main lobby. One person may have a weapon. Situation is escalating rapidly.',
+  'Fire':
+      'Heavy smoke visible from the kitchen area. Fire alarm triggered on floor 3. Multiple guests evacuating. Smell of burning.',
+  'Accident':
+      'Vehicle accident with possible injuries reported at the main entrance. Multiple people involved. Emergency response needed immediately.',
+  'Rescue':
+      'Person is trapped under debris in Corridor A following a partial ceiling collapse. Structural cracking still audible.',
+  'Other':
+      'Safety hazard reported in the venue. Requires immediate inspection and response by security personnel.',
+};
 
 class KeywordReportingPage extends StatelessWidget {
   const KeywordReportingPage({super.key, this.selectedTab = ArgosTab.status});
 
   final ArgosTab selectedTab;
+
+  void _navigate(BuildContext context, String keyword) {
+    final reportText = _kReportTexts[keyword] ?? keyword;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CrisisResultPage(reportText: reportText),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,18 +49,18 @@ class KeywordReportingPage extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            SizedBox(height: 4),
-            _KeywordHeader(),
-            SizedBox(height: 20),
-            _PrimaryEmergencyCard(),
-            SizedBox(height: 12),
-            _EmergencyGrid(),
-            SizedBox(height: 12),
-            _OtherHazardCard(),
-            SizedBox(height: 14),
-            _TrackingOverviewCard(),
-            SizedBox(height: 8),
+          children: [
+            const SizedBox(height: 4),
+            const _KeywordHeader(),
+            const SizedBox(height: 20),
+            _PrimaryEmergencyCard(onTap: () => _navigate(context, 'Medical')),
+            const SizedBox(height: 12),
+            _EmergencyGrid(onTap: (kw) => _navigate(context, kw)),
+            const SizedBox(height: 12),
+            _OtherHazardCard(onTap: () => _navigate(context, 'Other')),
+            const SizedBox(height: 14),
+            const _TrackingOverviewCard(),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -82,11 +111,15 @@ class _KeywordHeader extends StatelessWidget {
 }
 
 class _PrimaryEmergencyCard extends StatelessWidget {
-  const _PrimaryEmergencyCard();
+  const _PrimaryEmergencyCard({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       width: double.infinity,
       height: 170,
       decoration: BoxDecoration(
@@ -148,56 +181,63 @@ class _PrimaryEmergencyCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ), // Container
+    ); // GestureDetector
   }
 }
 
 class _EmergencyGrid extends StatelessWidget {
-  const _EmergencyGrid();
+  const _EmergencyGrid({required this.onTap});
+
+  final void Function(String keyword) onTap;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
+      children: [
         Row(
           children: [
             Expanded(
               child: _EmergencyTypeCard(
                 icon: Icons.security_rounded,
-                iconColor: Color(0xFFA7BFFF),
+                iconColor: const Color(0xFFA7BFFF),
                 title: 'Police',
                 subtitle: 'Security & Safety',
+                onTap: () => onTap('Police'),
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: _EmergencyTypeCard(
                 icon: Icons.local_fire_department_rounded,
-                iconColor: Color(0xFFF3B3A8),
+                iconColor: const Color(0xFFF3B3A8),
                 title: 'Fire',
                 subtitle: 'Active\nfire/smoke',
+                onTap: () => onTap('Fire'),
               ),
             ),
           ],
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: _EmergencyTypeCard(
                 icon: Icons.car_crash_rounded,
-                iconColor: Color(0xFF53E677),
+                iconColor: const Color(0xFF53E677),
                 title: 'Accident',
                 subtitle: 'Road & Vehicle',
+                onTap: () => onTap('Accident'),
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: _EmergencyTypeCard(
                 icon: Icons.ac_unit_rounded,
-                iconColor: Color(0xFF4987FF),
+                iconColor: const Color(0xFF4987FF),
                 title: 'Rescue',
                 subtitle: 'Entrapment/Search',
+                onTap: () => onTap('Rescue'),
               ),
             ),
           ],
@@ -213,92 +253,102 @@ class _EmergencyTypeCard extends StatelessWidget {
     required this.iconColor,
     required this.title,
     required this.subtitle,
+    required this.onTap,
   });
 
   final IconData icon;
   final Color iconColor;
   final String title;
   final String subtitle;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 154,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF3B3B3E),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: iconColor, size: 34),
-          const Spacer(),
-          Text(
-            title,
-            style: const TextStyle(
-              color: Color(0xFFE8E8EA),
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 154,
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+        decoration: BoxDecoration(
+          color: const Color(0xFF3B3B3E),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: iconColor, size: 34),
+            const Spacer(),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Color(0xFFE8E8EA),
+                fontSize: 21,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              color: Color(0xFFE2BBB5),
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              height: 1.3,
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                color: Color(0xFFE2BBB5),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class _OtherHazardCard extends StatelessWidget {
-  const _OtherHazardCard();
+  const _OtherHazardCard({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 18, 14, 18),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2F3136), Color(0xFF292A30)],
-        ),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Row(
-        children: const [
-          Icon(Icons.warning_rounded, color: Color(0xFFBF9C9B), size: 44),
-          SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Other',
-                style: TextStyle(
-                  color: Color(0xFFE7E7E9),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                'Safety Hazard',
-                style: TextStyle(
-                  color: Color(0xFFE3BBB5),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(14, 18, 14, 18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2F3136), Color(0xFF292A30)],
           ),
-        ],
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Row(
+          children: const [
+            Icon(Icons.warning_rounded, color: Color(0xFFBF9C9B), size: 44),
+            SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Other',
+                  style: TextStyle(
+                    color: Color(0xFFE7E7E9),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Safety Hazard',
+                  style: TextStyle(
+                    color: Color(0xFFE3BBB5),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

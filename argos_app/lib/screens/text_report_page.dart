@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/argos_tab.dart';
+import '../screens/crisis_result_page.dart';
 import '../widgets/argos_screen_shell.dart';
 
 class TextReportPage extends StatefulWidget {
@@ -101,14 +102,23 @@ class _TextReportPageState extends State<TextReportPage> {
             const SizedBox(height: 20),
             _SendReportButton(
               onPressed: () {
+                final text = _controller.text.trim();
+                if (text.isEmpty) {
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      const SnackBar(
+                        content: Text('Please describe the emergency first.'),
+                      ),
+                    );
+                  return;
+                }
                 FocusScope.of(context).unfocus();
-                ScaffoldMessenger.of(context)
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(
-                    const SnackBar(
-                      content: Text('Emergency text report sent.'),
-                    ),
-                  );
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => CrisisResultPage(reportText: text),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 10),
