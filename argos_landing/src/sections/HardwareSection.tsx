@@ -4,7 +4,6 @@ import {
   Gauge,
   Network,
   Trophy,
-  type LucideIcon,
 } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { ScrollReveal } from '../components/ScrollReveal'
