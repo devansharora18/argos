@@ -18,6 +18,8 @@ export interface PersonnelRecord {
     | 'unavailable'
     | 'off_shift';
   current_assignment?: string | null;
+  // FCM registration token — set by the Flutter app on login / token refresh
+  fcm_token?: string;
 }
 
 export interface StatusUpdateInput {
@@ -30,8 +32,10 @@ export interface StatusUpdateInput {
 
 export interface ResponderCandidate {
   staff_id: string;
+  name?: string;
   role: string;
   floor?: string;
+  certifications?: string[];
 }
 
 export class PersonnelRepository {
@@ -125,11 +129,13 @@ export class PersonnelRepository {
     const query = roles.length > 0 ? baseRef.where('role', 'in', roles) : baseRef;
     const snapshot = await query.limit(20).get();
     return snapshot.docs.map(doc => {
-      const data = doc.data() as PersonnelRecord;
+      const data = doc.data() as PersonnelRecord & { certifications?: string[] };
       return {
         staff_id: data.staff_id ?? doc.id,
+        name: data.name,
         role: data.role,
         floor: data.floor,
+        certifications: data.certifications,
       };
     });
   }

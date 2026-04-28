@@ -7,6 +7,7 @@ import { classifyCrisisWorker } from './workers/classifyCrisis';
 import { dispatchToStaffWorker } from './workers/dispatchToStaff';
 import { ingestEdgeDetectionWorker } from './workers/ingestEdgeDetection';
 import { monitorEscalationWorker } from './workers/monitorEscalation';
+import { notifyGuestsWorker } from './workers/notifyGuests';
 import { orchestrateResponseWorker } from './workers/orchestrateResponse';
 import { replayEdgeBatchWorker } from './workers/replayEdgeBatch';
 
@@ -29,6 +30,9 @@ export const dispatchToStaff = onMessagePublished(
   dispatchToStaffWorker
 );
 
+export const notifyGuests = onMessagePublished(
+  { topic: 'guest.notification.requested', region: config.gcpRegion },
+  notifyGuestsWorker
 export const ingestEdgeDetection = onMessagePublished(
   { topic: 'edge.detected', region: config.gcpRegion },
   ingestEdgeDetectionWorker
