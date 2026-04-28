@@ -26,6 +26,7 @@ export interface CrisisDraft {
   trigger_sources: string[];
   report_text?: string;
   audio_uri?: string;
+  frame_base64?: string;
   created_by: {
     actor_id: string;
     role: string;
@@ -68,6 +69,23 @@ export interface ClassificationInput {
   crisisType: CrisisRecord['crisis_type'];
   severity: number;
   confidence: number;
+  floor?: string;
+  zone?: string;
+  geminiReasoning?: string;
+}
+
+export interface OrchestrationInput {
+  venueId: string;
+  crisisId: string;
+  guestNotification: {
+    affected_floors: string[];
+    message: string;
+    evacuation_route: string;
+    tone: 'calm' | 'urgent';
+  };
+  controlRoomSummary: string;
+  alternativesConsidered: string[];
+  decisionReasoning: string;
 }
 
 export interface DispatchInput {
@@ -177,6 +195,9 @@ export class CrisisRepository {
         confidence: input.confidence,
         status: 'classified',
         classified_at: now,
+        ...(input.floor && { floor: input.floor }),
+        ...(input.zone && { zone: input.zone }),
+        ...(input.geminiReasoning && { gemini_reasoning: input.geminiReasoning }),
       });
 
       tx.create(timelineRef, {
@@ -186,6 +207,38 @@ export class CrisisRepository {
         crisis_type: input.crisisType,
         severity: input.severity,
         confidence: input.confidence,
+      });
+    });
+  }
+
+  public async applyOrchestration(input: OrchestrationInput): Promise<void> {
+    const crisisRef = this.crisisDocRef(input.venueId, input.crisisId);
+    const now = new Date().toISOString();
+    const timelineRef = crisisRef.collection('timeline').doc(randomUUID());
+
+    await firestore.runTransaction(async tx => {
+      const snap = await tx.get(crisisRef);
+      if (!snap.exists) {
+        throw new AppError({
+          code: 'RESOURCE_NOT_FOUND',
+          message: 'Crisis not found for orchestration',
+          httpStatus: 404,
+        });
+      }
+
+      tx.update(crisisRef, {
+        guest_notification: input.guestNotification,
+        control_room_summary: input.controlRoomSummary,
+        alternatives_considered: input.alternativesConsidered,
+        gemini_reasoning: input.decisionReasoning,
+        orchestrated_at: now,
+      });
+
+      tx.create(timelineRef, {
+        event: 'orchestration_complete',
+        type: 'orchestration',
+        timestamp: now,
+        control_room_summary: input.controlRoomSummary,
       });
     });
   }
@@ -284,6 +337,20 @@ export class CrisisRepository {
         dispatch_id: dispatchId,
       });
     });
+  }
+
+  public async getDispatchById(
+    venueId: string,
+    crisisId: string,
+    dispatchId: string
+  ): Promise<DispatchRecord | null> {
+    const snapshot = await this.crisisDocRef(venueId, crisisId)
+      .collection('dispatch')
+      .doc(dispatchId)
+      .get();
+
+    if (!snapshot.exists) return null;
+    return snapshot.data() as DispatchRecord;
   }
 
   public async getAssignmentForStaff(

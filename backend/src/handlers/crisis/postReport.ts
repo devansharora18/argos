@@ -6,12 +6,22 @@ import { requireRole, requireVenueScope } from '../../auth/roleGuard';
 import { PostReportBody, PostReportResponse } from '../../contracts/api/crisis';
 import { CrisisCreatedEvent } from '../../contracts/events/crisisEvents';
 import { RequestLocals } from '../../http/middleware/context';
+import { transcribeAudio, AudioEncoding } from '../../integrations/speech/speechToText';
 import { publishJson } from '../../integrations/pubsub/publisher';
 import { crisisRepo } from '../../repositories/crisisRepo';
 import { idempotencyRepo } from '../../repositories/idempotencyRepo';
 import { createDraftFromReport } from '../../services/crisisService';
 import { AppError } from '../../utils/errors';
 import { requestHash } from '../../utils/requestHash';
+import { logger } from '../../bootstrap/logger';
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/crises/report
+//
+// Accepts a crisis report from a guest or staff member.
+// If audio_base64 is provided, it is transcribed via Google Speech-to-Text
+// before the crisis draft is created — so Gemini always has text to classify.
+// ---------------------------------------------------------------------------
 
 export async function postReportHandler(
   req: Request<Record<string, string>, PostReportResponse, PostReportBody>,
@@ -25,6 +35,7 @@ export async function postReportHandler(
 
   const locals = res.locals as RequestLocals;
   const { correlationId, idempotencyKey } = locals.ctx;
+
   if (!idempotencyKey) {
     throw new AppError({
       code: 'MISSING_IDEMPOTENCY_KEY',
@@ -33,6 +44,51 @@ export async function postReportHandler(
     });
   }
 
+  // ---------------------------------------------------------------------------
+  // Speech-to-Text transcription
+  // If the client sent audio_base64, transcribe it now so report_text is
+  // always populated before the draft hits Firestore and the pipeline.
+  // ---------------------------------------------------------------------------
+  let resolvedReportText = body.report_text;
+
+  if (body.audio_base64 && !resolvedReportText) {
+    logger.info('postReportHandler: audio_base64 received — transcribing', {
+      venue_id: body.venue_id,
+      floor: body.floor,
+      encoding: body.audio_encoding ?? 'WEBM_OPUS',
+    });
+
+    const transcription = await transcribeAudio(
+      body.audio_base64,
+      (body.audio_encoding as AudioEncoding) ?? 'WEBM_OPUS',
+      body.audio_sample_rate ?? 48000
+    );
+
+    if (transcription) {
+      resolvedReportText = transcription.transcript;
+      logger.info('postReportHandler: transcription succeeded', {
+        transcript: resolvedReportText,
+        confidence: transcription.confidence,
+      });
+    } else {
+      // Transcription failed — allow pipeline to continue with empty text.
+      // Gemini classifier handles empty text gracefully with low confidence.
+      logger.warn('postReportHandler: transcription returned null — continuing without text', {
+        venue_id: body.venue_id,
+        floor: body.floor,
+      });
+    }
+  }
+
+  // Merge transcribed text back into body for downstream use
+  const enrichedBody: PostReportBody = {
+    ...body,
+    report_text: resolvedReportText,
+  };
+
+  // ---------------------------------------------------------------------------
+  // Idempotent crisis creation + pipeline trigger
+  // ---------------------------------------------------------------------------
   const result = await idempotencyRepo.executeOnce<PostReportResponse>(
     {
       scope: 'crisis.report',
@@ -42,7 +98,7 @@ export async function postReportHandler(
       ttlHours: config.idempotencyTtlHours,
     },
     async () => {
-      const crisisDraft = createDraftFromReport(body, actor);
+      const crisisDraft = createDraftFromReport(enrichedBody, actor);
       await crisisRepo.createDraft(crisisDraft);
 
       const crisisCreatedEvent: CrisisCreatedEvent = {

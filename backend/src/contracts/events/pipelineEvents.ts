@@ -18,5 +18,16 @@ export const dispatchRequestedEventSchema = eventEnvelopeSchema.extend({
   }),
 });
 
+export const guestNotificationRequestedEventSchema = eventEnvelopeSchema.extend({
+  event_name: z.literal('guest.notification.requested'),
+  payload: z.object({
+    message: z.string(),
+    evacuation_route: z.string(),
+    affected_floors: z.array(z.string()),
+    tone: z.enum(['calm', 'urgent']),
+  }),
+});
+
 export type OrchestrationRequestedEvent = z.infer<typeof orchestrationRequestedEventSchema>;
 export type DispatchRequestedEvent = z.infer<typeof dispatchRequestedEventSchema>;
+export type GuestNotificationRequestedEvent = z.infer<typeof guestNotificationRequestedEventSchema>;

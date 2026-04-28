@@ -18,6 +18,7 @@ export function createDraftFromReport(body: PostReportBody, actor: ActorClaims):
     trigger_sources: body.trigger_sources,
     report_text: body.report_text,
     audio_uri: body.audio_uri,
+    frame_base64: body.frame_base64,
     created_by: {
       actor_id: actor.uid,
       role: actor.role,

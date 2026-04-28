@@ -6,6 +6,10 @@ export interface AppConfig {
   pubsubDisabled: boolean;
   authDisabled: boolean;
   port: number;
+  geminiApiKey: string;
+  gcpProjectId: string;
+  fcmEnabled: boolean;
+  demoApiKey: string;
 }
 
 function readNumber(name: string, fallback: number): number {
@@ -35,4 +39,8 @@ export const config: AppConfig = {
   pubsubDisabled: readBoolean('PUBSUB_DISABLED', false),
   authDisabled: readBoolean('AUTH_DISABLED', false),
   port: readNumber('PORT', 8080),
+  geminiApiKey: process.env.GEMINI_API_KEY ?? '',
+  gcpProjectId: process.env.GCP_PROJECT_ID ?? '',
+  fcmEnabled: readBoolean('FCM_ENABLED', false),
+  demoApiKey: process.env.DEMO_API_KEY ?? 'haven-demo-2024',
 };

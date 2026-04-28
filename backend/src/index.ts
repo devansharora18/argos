@@ -6,6 +6,7 @@ import { config } from './bootstrap/config';
 import { classifyCrisisWorker } from './workers/classifyCrisis';
 import { dispatchToStaffWorker } from './workers/dispatchToStaff';
 import { monitorEscalationWorker } from './workers/monitorEscalation';
+import { notifyGuestsWorker } from './workers/notifyGuests';
 import { orchestrateResponseWorker } from './workers/orchestrateResponse';
 
 const app = createApp();
@@ -25,6 +26,11 @@ export const orchestrateResponse = onMessagePublished(
 export const dispatchToStaff = onMessagePublished(
   { topic: 'dispatch.requested', region: config.gcpRegion },
   dispatchToStaffWorker
+);
+
+export const notifyGuests = onMessagePublished(
+  { topic: 'guest.notification.requested', region: config.gcpRegion },
+  notifyGuestsWorker
 );
 
 export const monitorEscalation = onSchedule(
