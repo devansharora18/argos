@@ -35,7 +35,8 @@ class _InstantSosPageState extends State<InstantSosPage> {
       }
 
       setState(() {
-        _dispatchStatus = 'SOS sent. Staff and control room have been notified.';
+        _dispatchStatus =
+            'SOS sent. Staff and control room have been notified.';
       });
     } catch (_) {
       if (!mounted) {
@@ -43,7 +44,8 @@ class _InstantSosPageState extends State<InstantSosPage> {
       }
 
       setState(() {
-        _dispatchStatus = 'Unable to reach the backend. Check the guest app connection.';
+        _dispatchStatus =
+            'Unable to reach the backend. Check the guest app connection.';
       });
     }
   }
