@@ -11,7 +11,6 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import type { ReactElement } from 'react'
-import heroImg from '../assets/hero.png'
 import { ScrollReveal } from '../components/ScrollReveal'
 
 type ModelCard = {
@@ -127,7 +126,7 @@ export function TechnologySection(): ReactElement {
           <ScrollReveal delay={0.1}>
             <div className="relative min-h-[440px] overflow-hidden rounded-xl border border-white/8 bg-[#0c0d12] sm:min-h-[560px] xl:h-[640px] xl:min-h-0 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
               <img
-                src={heroImg}
+                src="/argos.png"
                 alt="Argos edge compute board"
                 className="absolute left-1/2 top-1/2 h-[115%] w-[115%] max-w-none -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 transition-transform duration-700 hover:scale-105"
               />
