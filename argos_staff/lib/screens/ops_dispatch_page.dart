@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../models/crisis_profile.dart';
 import '../models/staff_tab.dart';
+import '../services/crisis_stream_service.dart';
 import '../widgets/argos_screen_shell.dart';
 
 class OpsDispatchPage extends StatelessWidget {
@@ -10,10 +12,14 @@ class OpsDispatchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final crisis = args is IncomingCrisis ? args : null;
+    final profile = StaffCrisisProfile.forType(crisis?.crisisType);
+
     return ArgosScreenShell(
       selectedTab: selectedTab,
       showProfileInTopBar: false,
-      notificationColor: const Color(0xFFFF3D52),
+      notificationColor: profile.accentColor,
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
@@ -21,22 +27,22 @@ class OpsDispatchPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            _DispatchAlertBanner(),
-            SizedBox(height: 16),
-            _IncidentHeaderCard(),
-            SizedBox(height: 16),
-            _MissionDirectiveCard(),
-            SizedBox(height: 20),
-            _BringWithYouSection(),
-            SizedBox(height: 18),
-            _PrimaryRouteCard(),
-            SizedBox(height: 14),
-            _RouteMapCard(),
-            SizedBox(height: 18),
-            _PrimaryActionButton(),
-            SizedBox(height: 10),
-            _ActionRow(),
+          children: [
+            _DispatchAlertBanner(crisis: crisis, profile: profile),
+            const SizedBox(height: 16),
+            _IncidentHeaderCard(crisis: crisis, profile: profile),
+            const SizedBox(height: 16),
+            _MissionDirectiveCard(profile: profile),
+            const SizedBox(height: 20),
+            _BringWithYouSection(profile: profile),
+            const SizedBox(height: 18),
+            _PrimaryRouteCard(profile: profile),
+            const SizedBox(height: 14),
+            const _RouteMapCard(),
+            const SizedBox(height: 18),
+            const _PrimaryActionButton(),
+            const SizedBox(height: 10),
+            const _ActionRow(),
           ],
         ),
       ),
@@ -45,22 +51,26 @@ class OpsDispatchPage extends StatelessWidget {
 }
 
 class _DispatchAlertBanner extends StatelessWidget {
-  const _DispatchAlertBanner();
+  const _DispatchAlertBanner({required this.crisis, required this.profile});
+
+  final IncomingCrisis? crisis;
+  final StaffCrisisProfile profile;
 
   @override
   Widget build(BuildContext context) {
+    final time = crisis?.detectedAt ?? DateTime.now();
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF4A58),
+        color: profile.accentColor,
         border: Border.all(color: const Color(0x66FFFFFF)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Icon(Icons.warning_rounded, color: Color(0xFF4B0A0F), size: 40),
-          SizedBox(width: 12),
-          Expanded(
+        children: [
+          const Icon(Icons.warning_rounded, color: Color(0xFF4B0A0F), size: 40),
+          const SizedBox(width: 12),
+          const Expanded(
             child: Text(
               'DISPATCH\nRECEIVED',
               style: TextStyle(
@@ -72,8 +82,8 @@ class _DispatchAlertBanner extends StatelessWidget {
             ),
           ),
           Text(
-            '14:32:06',
-            style: TextStyle(
+            _formatTime(time),
+            style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.4,
@@ -84,13 +94,27 @@ class _DispatchAlertBanner extends StatelessWidget {
       ),
     );
   }
+
+  String _formatTime(DateTime t) {
+    final hh = t.hour.toString().padLeft(2, '0');
+    final mm = t.minute.toString().padLeft(2, '0');
+    final ss = t.second.toString().padLeft(2, '0');
+    return '$hh:$mm:$ss';
+  }
 }
 
 class _IncidentHeaderCard extends StatelessWidget {
-  const _IncidentHeaderCard();
+  const _IncidentHeaderCard({required this.crisis, required this.profile});
+
+  final IncomingCrisis? crisis;
+  final StaffCrisisProfile profile;
 
   @override
   Widget build(BuildContext context) {
+    final severity = crisis?.severity ?? 4;
+    final zone = crisis?.zone ?? 'Awaiting location';
+    final floor = crisis?.floor;
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF121622),
@@ -102,33 +126,33 @@ class _IncidentHeaderCard extends StatelessWidget {
             right: -26,
             top: -16,
             child: Icon(
-              Icons.local_fire_department_rounded,
+              profile.icon,
               size: 150,
-              color: const Color(0xFFFF4A58).withValues(alpha: 0.14),
+              color: profile.accentColor.withValues(alpha: 0.14),
             ),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              _CardAccent(color: Color(0xFFFF3D52)),
+            children: [
+              _CardAccent(color: profile.accentColor),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(14, 14, 14, 14),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Icon(
-                            Icons.local_fire_department_rounded,
+                            profile.icon,
                             size: 36,
-                            color: Color(0xFFFF5868),
+                            color: profile.accentColor,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Structural Fire',
-                              style: TextStyle(
+                              profile.displayName,
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFFEDEFF8),
@@ -137,40 +161,52 @@ class _IncidentHeaderCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'Room 312 · Floor 3 · East Wing',
-                        style: TextStyle(
+                        floor != null ? '$zone · Floor $floor' : zone,
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFFA8AFC1),
                         ),
                       ),
-                      SizedBox(height: 14),
+                      if (crisis?.description.isNotEmpty ?? false) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          crisis!.description,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            height: 1.4,
+                            color: Color(0xFFB7BDD0),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 14),
                       Row(
                         children: [
                           Expanded(
                             child: _DataCell(
                               label: 'SEVERITY',
-                              value: 'SEV 4/5',
-                              valueColor: Color(0xFFFF5C67),
+                              value: severityCell(severity),
+                              valueColor: severityColor(severity),
                             ),
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: _DataCell(
                               label: 'POPULATION',
-                              value: '47 AT RISK',
-                              valueColor: Color(0xFFFFC262),
+                              value: profile.populationAtRisk,
+                              valueColor: const Color(0xFFFFC262),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 6),
+                      const SizedBox(height: 6),
                       _DataCell(
                         label: 'AI CONFIDENCE',
-                        value: 'CONF: 0.94',
-                        valueColor: Color(0xFF58F78B),
+                        value: profile.aiConfidence,
+                        valueColor: const Color(0xFF58F78B),
                       ),
                     ],
                   ),
@@ -185,18 +221,20 @@ class _IncidentHeaderCard extends StatelessWidget {
 }
 
 class _MissionDirectiveCard extends StatelessWidget {
-  const _MissionDirectiveCard();
+  const _MissionDirectiveCard({required this.profile});
+
+  final StaffCrisisProfile profile;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF111521),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111521),
         border: Border(
-          left: BorderSide(color: Color(0xFFFF3D52), width: 5),
-          top: BorderSide(color: Color(0xFF2A3042)),
-          right: BorderSide(color: Color(0xFF2A3042)),
-          bottom: BorderSide(color: Color(0xFF2A3042)),
+          left: BorderSide(color: profile.accentColor, width: 5),
+          top: const BorderSide(color: Color(0xFF2A3042)),
+          right: const BorderSide(color: Color(0xFF2A3042)),
+          bottom: const BorderSide(color: Color(0xFF2A3042)),
         ),
       ),
       child: Container(
@@ -209,10 +247,10 @@ class _MissionDirectiveCard extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'MISSION DIRECTIVE',
               style: TextStyle(
                 fontSize: 12,
@@ -221,15 +259,12 @@ class _MissionDirectiveCard extends StatelessWidget {
                 color: Color(0xFFCBC5CE),
               ),
             ),
-            SizedBox(height: 8),
-            Divider(color: Color(0xFF4A4F63), thickness: 1),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
+            const Divider(color: Color(0xFF4A4F63), thickness: 1),
+            const SizedBox(height: 8),
             Text(
-              'IMMEDIATE RESPONSE REQUIRED. PROCEED TO\n'
-              'ROOM 312 VIA AUTHORIZED ROUTE.\n'
-              'SUPPRESSION PRIORITY. SECURE PERIMETER\n'
-              'AND AWAIT HAZMAT TEAM ARRIVAL.',
-              style: TextStyle(
+              profile.missionDirective,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 height: 1.45,
@@ -245,14 +280,16 @@ class _MissionDirectiveCard extends StatelessWidget {
 }
 
 class _BringWithYouSection extends StatelessWidget {
-  const _BringWithYouSection();
+  const _BringWithYouSection({required this.profile});
+
+  final StaffCrisisProfile profile;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
+      children: [
+        const Text(
           'BRING WITH YOU',
           style: TextStyle(
             fontSize: 12,
@@ -261,17 +298,13 @@ class _BringWithYouSection extends StatelessWidget {
             color: Color(0xFFD3C7CB),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            _GearChip(
-              icon: Icons.fire_extinguisher_rounded,
-              label: 'Fire Extinguisher',
-            ),
-            _GearChip(icon: Icons.radio_rounded, label: 'Radio Unit 03'),
-            _GearChip(icon: Icons.shield_rounded, label: 'Protective Gear'),
+            for (final item in profile.gear)
+              _GearChip(icon: item.icon, label: item.label),
           ],
         ),
       ],
@@ -280,7 +313,9 @@ class _BringWithYouSection extends StatelessWidget {
 }
 
 class _PrimaryRouteCard extends StatelessWidget {
-  const _PrimaryRouteCard();
+  const _PrimaryRouteCard({required this.profile});
+
+  final StaffCrisisProfile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -292,8 +327,8 @@ class _PrimaryRouteCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
+        children: [
+          const Text(
             'PRIMARY ROUTE',
             style: TextStyle(
               fontSize: 12,
@@ -302,17 +337,17 @@ class _PrimaryRouteCard extends StatelessWidget {
               color: Color(0xFFD6CBD0),
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            'Via East Corridor -> Stairwell C',
-            style: TextStyle(
+            profile.primaryRoute,
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
               color: Color(0xFF58F58C),
             ),
           ),
-          SizedBox(height: 12),
-          _HazardAdvisory(),
+          const SizedBox(height: 12),
+          _HazardAdvisory(advisory: profile.hazardAdvisory),
         ],
       ),
     );
@@ -508,7 +543,9 @@ class _GearChip extends StatelessWidget {
 }
 
 class _HazardAdvisory extends StatelessWidget {
-  const _HazardAdvisory();
+  const _HazardAdvisory({required this.advisory});
+
+  final String advisory;
 
   @override
   Widget build(BuildContext context) {
@@ -522,12 +559,12 @@ class _HazardAdvisory extends StatelessWidget {
           bottom: BorderSide(color: Color(0x663A313D)),
         ),
       ),
-      child: const Padding(
-        padding: EdgeInsets.fromLTRB(10, 8, 10, 8),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.warning_amber_rounded,
@@ -546,10 +583,10 @@ class _HazardAdvisory extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 1),
+            const SizedBox(height: 1),
             Text(
-              'Stairwell A BLOCKED',
-              style: TextStyle(
+              advisory,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFFE9DDE0),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/argos_tab.dart';
+import '../models/crisis_profile.dart';
+import '../services/crisis_stream_service.dart';
 import '../widgets/argos_screen_shell.dart';
 
 class MapAlertPage extends StatelessWidget {
@@ -10,6 +12,10 @@ class MapAlertPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final crisis = args is IncomingCrisis ? args : null;
+    final profile = GuestCrisisProfile.forType(crisis?.crisisType);
+
     return ArgosScreenShell(
       selectedTab: selectedTab,
       child: LayoutBuilder(
@@ -40,12 +46,13 @@ class MapAlertPage extends StatelessWidget {
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        const _EmergencyAlertCard(),
+                        _EmergencyAlertCard(crisis: crisis, profile: profile),
                         Positioned(
                           left: 20,
                           right: 20,
                           bottom: -52,
                           child: _ImmediateActionCard(
+                            profile: profile,
                             onPressed: () {
                               ScaffoldMessenger.of(context)
                                 ..hideCurrentSnackBar()
@@ -62,28 +69,35 @@ class MapAlertPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 74),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         children: [
                           Expanded(
                             child: _AlertMetric(
                               label: 'ETA TO ZONE',
-                              value: '12 Mins',
-                              valueColor: Color(0xFFF1F2F3),
+                              value: etaForSeverity(crisis?.severity ?? 4),
+                              valueColor: const Color(0xFFF1F2F3),
                             ),
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: _AlertMetric(
                               label: 'RISK LEVEL',
-                              value: 'Severe',
-                              valueColor: Color(0xFFF3A6A0),
+                              value: severityLabel(crisis?.severity ?? 4),
+                              valueColor: severityColor(crisis?.severity ?? 4),
                             ),
                           ),
                         ],
                       ),
                     ),
+                    if (crisis != null) ...[
+                      const SizedBox(height: 18),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: _CrisisSummaryCard(crisis: crisis),
+                      ),
+                    ],
                     const SizedBox(height: 26),
                     _MapActionButton(
                       label: 'View Map',
@@ -131,7 +145,10 @@ class MapAlertPage extends StatelessWidget {
 }
 
 class _EmergencyAlertCard extends StatelessWidget {
-  const _EmergencyAlertCard();
+  const _EmergencyAlertCard({required this.crisis, required this.profile});
+
+  final IncomingCrisis? crisis;
+  final GuestCrisisProfile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -139,13 +156,25 @@ class _EmergencyAlertCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF5A50),
+        color: profile.heroColor,
         borderRadius: BorderRadius.circular(44),
         border: Border.all(color: const Color(0x4CFFFFFF)),
-        boxShadow: const [
-          BoxShadow(color: Color(0xA1FF4A45), blurRadius: 52, spreadRadius: 6),
-          BoxShadow(color: Color(0x68FF4F4A), blurRadius: 28, spreadRadius: 14),
-          BoxShadow(color: Color(0x4CFF4F4A), blurRadius: 14, spreadRadius: 20),
+        boxShadow: [
+          BoxShadow(
+            color: profile.heroShadowColor,
+            blurRadius: 52,
+            spreadRadius: 6,
+          ),
+          BoxShadow(
+            color: profile.heroShadowColor.withValues(alpha: 0.4),
+            blurRadius: 28,
+            spreadRadius: 14,
+          ),
+          BoxShadow(
+            color: profile.heroShadowColor.withValues(alpha: 0.3),
+            blurRadius: 14,
+            spreadRadius: 20,
+          ),
         ],
       ),
       child: Column(
@@ -168,17 +197,17 @@ class _EmergencyAlertCard extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0x36FFFFFF)),
             ),
-            child: const Icon(
-              Icons.flood_rounded,
+            child: Icon(
+              profile.heroIcon,
               size: 86,
-              color: Color(0xFFF9F9FA),
+              color: const Color(0xFFF9F9FA),
             ),
           ),
           const SizedBox(height: 18),
-          const Text(
-            'Flash Flood',
+          Text(
+            profile.displayName,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xFFF7F7F8),
               fontSize: 46,
               fontWeight: FontWeight.w800,
@@ -186,10 +215,10 @@ class _EmergencyAlertCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Critical danger in your area',
+          Text(
+            crisis?.zone ?? profile.subtitle,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xFFF8D3CF),
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -203,8 +232,9 @@ class _EmergencyAlertCard extends StatelessWidget {
 }
 
 class _ImmediateActionCard extends StatelessWidget {
-  const _ImmediateActionCard({required this.onPressed});
+  const _ImmediateActionCard({required this.profile, required this.onPressed});
 
+  final GuestCrisisProfile profile;
   final VoidCallback onPressed;
 
   @override
@@ -218,11 +248,11 @@ class _ImmediateActionCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'IMMEDIATE ACTION',
                   style: TextStyle(
                     color: Color(0xFFF5B8AF),
@@ -231,10 +261,10 @@ class _ImmediateActionCard extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Evacuate\nNorth',
-                  style: TextStyle(
+                  profile.actionLabel,
+                  style: const TextStyle(
                     color: Color(0xFFEAEAEC),
                     fontSize: 21,
                     fontWeight: FontWeight.w700,
@@ -257,10 +287,10 @@ class _ImmediateActionCard extends StatelessWidget {
                   color: const Color(0x4C8A3832),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(
-                  Icons.north_rounded,
+                child: Icon(
+                  profile.actionIcon,
                   size: 50,
-                  color: Color(0xFFFF6256),
+                  color: profile.actionAccentColor,
                 ),
               ),
             ),
@@ -268,6 +298,84 @@ class _ImmediateActionCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _CrisisSummaryCard extends StatelessWidget {
+  const _CrisisSummaryCard({required this.crisis});
+
+  final IncomingCrisis crisis;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1B1C22),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF2C2E36)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'INCIDENT DETAILS',
+            style: TextStyle(
+              color: Color(0xFFD7B5AC),
+              fontSize: 11,
+              letterSpacing: 2.2,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            crisis.description,
+            style: const TextStyle(
+              color: Color(0xFFE6E6EA),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on_rounded,
+                size: 14,
+                color: Color(0xFF8E92A0),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  '${crisis.zone}${crisis.floor != null ? ' · Floor ${crisis.floor}' : ''}',
+                  style: const TextStyle(
+                    color: Color(0xFF9CA0AD),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                _formatTime(crisis.detectedAt),
+                style: const TextStyle(
+                  color: Color(0xFF9CA0AD),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTime(DateTime t) {
+    final hh = t.hour.toString().padLeft(2, '0');
+    final mm = t.minute.toString().padLeft(2, '0');
+    return '$hh:$mm';
   }
 }
 
