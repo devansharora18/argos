@@ -1,33 +1,43 @@
+import {
+  ArrowRight,
+  Cpu,
+  Gauge,
+  Hotel,
+  Network,
+  ShoppingBag,
+  Trophy,
+  type LucideIcon,
+} from 'lucide-react'
 import type { ReactElement } from 'react'
 import { ScrollReveal } from '../components/ScrollReveal'
 
 type FeatureCard = {
-  icon: string
+  Icon: LucideIcon
   title: string
   description: string
 }
 
 type DeploymentItem = {
-  icon: string
+  Icon: LucideIcon
   title: string
   description: string
 }
 
 const featureCards: FeatureCard[] = [
   {
-    icon: '◍',
+    Icon: Cpu,
     title: 'Orin Architecture',
     description:
       'Ampere architecture GPU with 2048 NVIDIA CUDA cores and 64 Tensor Cores for unparalleled inference throughput.',
   },
   {
-    icon: '◔',
+    Icon: Gauge,
     title: 'TensorRT Acceleration',
     description:
       'Native integration with NVIDIA TensorRT, maximizing performance and reducing memory footprint for complex vision models.',
   },
   {
-    icon: '⌁',
+    Icon: Network,
     title: 'Edge-Native Inference',
     description:
       'Processes up to 8 concurrent 4K video streams locally, ensuring operational continuity even in disconnected environments.',
@@ -36,17 +46,17 @@ const featureCards: FeatureCard[] = [
 
 const deploymentItems: DeploymentItem[] = [
   {
-    icon: '▣',
+    Icon: ShoppingBag,
     title: 'Malls & Retail Centers',
     description: 'Multi-floor foot-traffic intelligence and incident isolation.',
   },
   {
-    icon: '▦',
+    Icon: Hotel,
     title: 'Hotels & Hospitality',
     description: 'Thermal fire detection and personalized guest evacuation routing.',
   },
   {
-    icon: '✚',
+    Icon: Trophy,
     title: 'Stadiums & Arenas',
     description: 'High-density crowd monitoring and acoustic anomaly detection.',
   },
@@ -99,14 +109,14 @@ export function HardwareSection(): ReactElement {
                   className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110 hover:shadow-[0_0_20px_rgba(255,97,39,0.4)]"
                 >
                   REQUEST DEMO
-                  <span aria-hidden="true">{'=>'}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
                 <a
                   href="#technology"
                   className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-xs font-semibold tracking-[0.2em] text-[#d7d9e2] transition hover:text-white hover:border-[var(--accent)]"
                 >
                   BACK TO TOP
-                  <span aria-hidden="true">{'=>'}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
               </div>
             </div>
@@ -137,20 +147,25 @@ export function HardwareSection(): ReactElement {
         </ScrollReveal>
 
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {featureCards.map((feature, index) => (
-            <ScrollReveal key={feature.title} delay={0.06 * index}>
-              <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                <p className="font-display text-xl text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">{feature.icon}</p>
-                <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
-                  {feature.title}
-                </h3>
-                <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
-                  {feature.description}
-                </p>
-              </article>
-            </ScrollReveal>
-          ))}
+          {featureCards.map((feature, index) => {
+            const Icon = feature.Icon
+            return (
+              <ScrollReveal key={feature.title} delay={0.06 * index}>
+                <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </span>
+                  <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
+                    {feature.title}
+                  </h3>
+                  <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
+                    {feature.description}
+                  </p>
+                </article>
+              </ScrollReveal>
+            )
+          })}
         </div>
       </section>
 
@@ -181,19 +196,22 @@ export function HardwareSection(): ReactElement {
               </p>
 
               <div className="mt-6 space-y-3">
-                {deploymentItems.map((item) => (
-                  <div
-                    key={item.title}
-                    className="group relative overflow-hidden rounded-sm border border-white/[0.07] bg-[#1b1b1f]/75 px-4 py-3 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_20px_rgba(255,97,39,0.06)]"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent)]/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                    <p className="relative z-10 font-display text-[1.1rem] text-[#f2f4f8]">
-                      <span className="mr-2 text-[#f0ab92] transition-colors group-hover:text-[#ff9a73]">{item.icon}</span>
-                      {item.title}
-                    </p>
-                    <p className="relative z-10 mt-1 text-[0.82rem] text-[#9ba0ad]">{item.description}</p>
-                  </div>
-                ))}
+                {deploymentItems.map((item) => {
+                  const Icon = item.Icon
+                  return (
+                    <div
+                      key={item.title}
+                      className="group relative overflow-hidden rounded-sm border border-white/[0.07] bg-[#1b1b1f]/75 px-4 py-3 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_20px_rgba(255,97,39,0.06)]"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent)]/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      <p className="relative z-10 flex items-center gap-2.5 font-display text-[1.1rem] text-[#f2f4f8]">
+                        <Icon className="h-4 w-4 flex-none text-[#f0ab92] transition-colors group-hover:text-[#ff9a73]" strokeWidth={1.5} />
+                        {item.title}
+                      </p>
+                      <p className="relative z-10 mt-1 text-[0.82rem] text-[#9ba0ad]">{item.description}</p>
+                    </div>
+                  )
+                })}
               </div>
             </ScrollReveal>
           </div>

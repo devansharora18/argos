@@ -1,3 +1,15 @@
+import {
+  Activity,
+  ArrowRight,
+  Droplets,
+  HeartPulse,
+  Radio,
+  ShieldCheck,
+  Thermometer,
+  Wind,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
 import type { ReactElement } from 'react'
 import heroImg from '../assets/hero.png'
 import { ScrollReveal } from '../components/ScrollReveal'
@@ -5,7 +17,7 @@ import { ScrollReveal } from '../components/ScrollReveal'
 type ModelCard = {
   title: string
   description: string
-  icon: string
+  Icon: LucideIcon
   status?: string
 }
 
@@ -14,36 +26,37 @@ const modelCards: ModelCard[] = [
     title: 'Thermal Anomalies',
     description:
       'Detects rapid temperature spikes and early-stage combustion via IR sensor fusion.',
-    icon: 'IR',
+    Icon: Thermometer,
     status: 'ACTIVE',
   },
   {
     title: 'Medical Distress',
     description:
       'Identifies irregular movement patterns indicative of falls, seizures, or physical distress.',
-    icon: 'MED',
+    Icon: HeartPulse,
     status: 'ACTIVE',
   },
   {
     title: 'Fluid Contamination',
     description:
       'Spectrometric analysis of local water supplies for immediate contamination alerts.',
-    icon: 'H2O',
+    Icon: Droplets,
   },
   {
     title: 'Atmospheric Toxins',
     description: 'Detects dangerous gas concentrations and airborne particulate spikes.',
-    icon: 'GAS',
+    Icon: Wind,
   },
 ]
 
 function SmallModelCard({ card, delay }: { card: ModelCard; delay: number }): ReactElement {
+  const Icon = card.Icon
   return (
     <ScrollReveal delay={delay} className="h-full">
       <article className="group relative flex h-full flex-col rounded-xl border border-white/6 bg-[#13151c]/92 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_30px_rgba(255,97,39,0.08)] sm:p-7">
         <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-display text-xs tracking-[0.12em] text-[#f0b399] transition-colors group-hover:border-[var(--accent)]/30">
-          {card.icon}
+        <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f0b399] transition-colors group-hover:border-[var(--accent)]/30">
+          <Icon className="h-5 w-5" strokeWidth={1.5} />
         </div>
         <h3 className="mt-6 max-w-[220px] font-display text-[1.45rem] leading-tight text-[#f2f3f7] transition-colors group-hover:text-[#ff9a73] sm:text-[1.6rem]">
           {card.title}
@@ -91,14 +104,14 @@ export function TechnologySection(): ReactElement {
                   className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110 hover:shadow-[0_0_20px_rgba(255,97,39,0.4)]"
                 >
                   REQUEST DEMO
-                  <span aria-hidden="true">{'=>'}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
                 <a
                   href="#hardware"
                   className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-xs font-semibold tracking-[0.2em] text-[#d7d9e2] transition hover:text-white hover:border-[var(--accent)]"
                 >
                   VIEW SPECS
-                  <span aria-hidden="true">{'=>'}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
               </div>
 
@@ -166,8 +179,8 @@ export function TechnologySection(): ReactElement {
           <ScrollReveal delay={0.18} className="h-full xl:row-span-2">
             <article className="group relative flex h-full flex-col rounded-xl border border-white/6 bg-[#14161d]/92 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_30px_rgba(255,97,39,0.08)] sm:p-7">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-display text-xs tracking-[0.12em] text-[#f0b399] transition-colors group-hover:border-[var(--accent)]/30">
-                SNS
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f0b399] transition-colors group-hover:border-[var(--accent)]/30">
+                <Activity className="h-5 w-5" strokeWidth={1.5} />
               </div>
               <h3 className="mt-5 max-w-[460px] font-display text-[1.85rem] leading-tight text-[#f2f3f7] transition-colors group-hover:text-[#ff9a73] sm:text-[2rem]">
                 Seismic and Structural Integrity
@@ -213,17 +226,17 @@ export function TechnologySection(): ReactElement {
               <FeatureBlock
                 title="ZERO-LATENCY INFERENCE"
                 description="All 7 AI models process data locally, eliminating network delays."
-                icon="⚡"
+                Icon={Zap}
               />
               <FeatureBlock
                 title="OFF-GRID OPERATION"
                 description="Fully autonomous operation with no cloud dependency required."
-                icon="📡"
+                Icon={Radio}
               />
               <FeatureBlock
                 title="INDUSTRIAL GRADE"
                 description="Engineered for extreme conditions and mission-critical reliability."
-                icon="🛡️"
+                Icon={ShieldCheck}
               />
             </div>
           </ScrollReveal>
@@ -244,10 +257,12 @@ function Stat({ label, value }: { label: string; value: string }) {
   )
 }
 
-function FeatureBlock({ title, description, icon }: { title: string; description: string; icon: string }) {
+function FeatureBlock({ title, description, Icon }: { title: string; description: string; Icon: LucideIcon }) {
   return (
     <div className="flex flex-col items-start gap-4 rounded-xl border border-white/6 bg-[#13151c]/80 p-6 transition-colors hover:border-[var(--accent)]/30">
-      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1f222b] text-xl">{icon}</span>
+      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1f222b] text-[#f0b399]">
+        <Icon className="h-5 w-5" strokeWidth={1.5} />
+      </span>
       <div>
         <h3 className="font-display text-[1.15rem] font-semibold text-[#f2f3f7]">{title}</h3>
         <p className="mt-2 text-[0.88rem] leading-relaxed text-[#9498a7]">{description}</p>

@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react'
 import { useState, type FormEvent, type ReactElement } from 'react'
 import { ScrollReveal } from '../components/ScrollReveal'
 
@@ -193,7 +194,7 @@ export function RequestDemoSection(): ReactElement {
               className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {status === 'submitting' ? 'TRANSMITTING…' : 'TRANSMIT REQUEST'}
-              <span aria-hidden="true">{'->'}</span>
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
             </button>
 
             {status === 'success' ? (

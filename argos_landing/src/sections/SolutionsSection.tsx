@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { ScrollReveal } from '../components/ScrollReveal'
 
@@ -29,14 +30,14 @@ export function SolutionsSection(): ReactElement {
                   className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110 hover:shadow-[0_0_20px_rgba(255,97,39,0.4)]"
                 >
                   REQUEST DEMO
-                  <span aria-hidden="true">{'=>'}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
                 <a
                   href="#hardware"
                   className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-[0.62rem] font-semibold tracking-[0.22em] text-[#d7d9e2] transition hover:text-white hover:border-[var(--accent)]"
                 >
                   EXPLORE HARDWARE
-                  <span aria-hidden="true">{'=>'}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                 </a>
               </div>
             </div>
