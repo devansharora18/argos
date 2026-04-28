@@ -1,0 +1,222 @@
+import {
+  ArrowRight,
+  Cpu,
+  Gauge,
+  Hotel,
+  Network,
+  ShoppingBag,
+  Trophy,
+  type LucideIcon,
+} from 'lucide-react'
+import type { ReactElement } from 'react'
+import { ScrollReveal } from '../components/ScrollReveal'
+
+type FeatureCard = {
+  Icon: LucideIcon
+  title: string
+  description: string
+}
+
+type DeploymentItem = {
+  Icon: LucideIcon
+  title: string
+  description: string
+}
+
+const featureCards: FeatureCard[] = [
+  {
+    Icon: Cpu,
+    title: 'Orin Architecture',
+    description:
+      'Ampere architecture GPU with 2048 NVIDIA CUDA cores and 64 Tensor Cores for unparalleled inference throughput.',
+  },
+  {
+    Icon: Gauge,
+    title: 'TensorRT Acceleration',
+    description:
+      'Native integration with NVIDIA TensorRT, maximizing performance and reducing memory footprint for complex vision models.',
+  },
+  {
+    Icon: Network,
+    title: 'Edge-Native Inference',
+    description:
+      'Processes up to 8 concurrent 4K video streams locally, ensuring operational continuity even in disconnected environments.',
+  },
+]
+
+const deploymentItems: DeploymentItem[] = [
+  {
+    Icon: ShoppingBag,
+    title: 'Malls & Retail Centers',
+    description: 'Multi-floor foot-traffic intelligence and incident isolation.',
+  },
+  {
+    Icon: Hotel,
+    title: 'Hotels & Hospitality',
+    description: 'Thermal fire detection and personalized guest evacuation routing.',
+  },
+  {
+    Icon: Trophy,
+    title: 'Stadiums & Arenas',
+    description: 'High-density crowd monitoring and acoustic anomaly detection.',
+  },
+]
+
+export function HardwareSection(): ReactElement {
+  return (
+    <>
+      <section id="hardware" className="min-h-screen px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-20">
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
+          <ScrollReveal>
+            <div className="max-w-[640px]">
+              <p className="inline-flex items-center gap-2 rounded-sm bg-[rgba(120,60,33,0.5)] px-3 py-1 text-[0.58rem] font-semibold tracking-[0.2em] text-[#f4b39a]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f4b39a] animate-pulse" />
+                HARDWARE SPECS
+              </p>
+
+              <h1 className="mt-6 font-display text-[3.3rem] leading-[0.98] text-[#eef0f6] sm:text-[4rem]">
+                Built for
+                <br />
+                <span className="text-[#ffa07e]">The Edge.</span>
+              </h1>
+
+              <p className="mt-7 max-w-[560px] text-[1.05rem] leading-relaxed text-[#a6aab7]">
+                A mission-critical sensor array engineered for zero-latency AI inference in
+                the harshest environments. Designed as a physical extension of the kinetic
+                command center.
+              </p>
+
+              <div className="mt-8 border-t border-white/[0.07] pt-4">
+                <div className="grid max-w-[420px] grid-cols-2 gap-8">
+                  <div>
+                    <p className="text-[0.58rem] font-semibold tracking-[0.2em] text-[#6b6f7d]">
+                      LATENCY
+                    </p>
+                    <p className="mt-1 font-display text-[2rem] text-[#f2f4f8]">{'< 5ms'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[0.58rem] font-semibold tracking-[0.2em] text-[#6b6f7d]">
+                      PROCESSING
+                    </p>
+                    <p className="mt-1 font-display text-[2rem] text-[#f2f4f8]">275 TOPS</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <a
+                  href="#request-demo"
+                  className="inline-flex items-center gap-2 rounded-sm bg-[var(--accent)] px-5 py-3 text-[0.62rem] font-semibold tracking-[0.22em] text-[#1f120b] transition hover:brightness-110 hover:shadow-[0_0_20px_rgba(255,97,39,0.4)]"
+                >
+                  REQUEST DEMO
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+                </a>
+                <a
+                  href="#technology"
+                  className="inline-flex items-center gap-2 border-b border-white/15 pb-1 text-xs font-semibold tracking-[0.2em] text-[#d7d9e2] transition hover:text-white hover:border-[var(--accent)]"
+                >
+                  BACK TO TOP
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.08}>
+            <div className="group relative overflow-hidden rounded-lg border border-white/[0.09] shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:shadow-[0_0_70px_rgba(0,0,0,0.7)]">
+              <img
+                src="/hardware.png"
+                alt="Argos hardware device"
+                className="block h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="pointer-events-none absolute inset-0 z-10 opacity-25 [background:linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
+              <div className="pointer-events-none absolute left-6 top-6 z-10 h-10 w-10 border-l border-t border-[#9da4ad]/60" />
+              <div className="pointer-events-none absolute bottom-6 right-6 z-10 h-10 w-10 border-b border-r border-[#9da4ad]/60" />
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      <section className="flex min-h-screen flex-col justify-center border-t border-white/[0.04] bg-[linear-gradient(180deg,#141318_0%,#121216_100%)] px-4 py-14 sm:px-6 lg:px-8">
+        <ScrollReveal>
+          <h2 className="font-display text-[2.5rem] text-[#eef0f5] sm:text-[3rem]">NVIDIA Jetson Optimized</h2>
+          <p className="mt-3 max-w-[760px] text-[0.96rem] leading-relaxed text-[#a4a8b5]">
+            Hardware-level acceleration tailored specifically for deep learning models
+            operating at the edge. No cloud dependency. No downtime.
+          </p>
+        </ScrollReveal>
+
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {featureCards.map((feature, index) => {
+            const Icon = feature.Icon
+            return (
+              <ScrollReveal key={feature.title} delay={0.06 * index}>
+                <article className="group relative h-full overflow-hidden rounded-md border border-white/[0.07] bg-[#313136]/72 p-6 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_25px_rgba(255,97,39,0.08)]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#f1ad96] transition-colors group-hover:text-[#ff9a73]">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </span>
+                  <h3 className="mt-4 font-display text-[1.45rem] leading-tight text-[#eff1f5] transition-colors group-hover:text-[#ff9a73]">
+                    {feature.title}
+                  </h3>
+                  <p className="mt-3 text-[0.86rem] leading-relaxed text-[#9ca0ad] transition-colors group-hover:text-[#b0b5c7]">
+                    {feature.description}
+                  </p>
+                </article>
+              </ScrollReveal>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="min-h-screen bg-[#05070b] px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-full min-h-screen w-full max-w-[1280px] items-center justify-center">
+          <div className="grid w-full gap-10 xl:grid-cols-[520px_minmax(0,1fr)] xl:items-center">
+            <ScrollReveal>
+              <div className="grid gap-4">
+                <img
+                  src="/malls.png"
+                  alt="Malls and retail centers deployment"
+                  className="h-64 w-full rounded-md border border-white/[0.08] object-cover transition-transform duration-500 hover:scale-[1.02]"
+                />
+                <img
+                  src="/hotel.png"
+                  alt="Hotels and hospitality deployment"
+                  className="h-64 w-full rounded-md border border-white/[0.08] object-cover brightness-150 transition-transform duration-500 hover:scale-[1.02]"
+                />
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.08}>
+              <h2 className="font-display text-[2.4rem] text-[#eff1f6] sm:text-[3rem]">Industrial Durability</h2>
+              <p className="mt-3 max-w-[620px] text-[1rem] leading-relaxed text-[#a2a7b4]">
+                Engineered for zero failure tolerance. Deployed in critical infrastructure
+                worldwide, the ARGOS sensor chassis withstands extreme temperatures,
+                vibrations, and weather conditions.
+              </p>
+
+              <div className="mt-6 space-y-3">
+                {deploymentItems.map((item) => {
+                  const Icon = item.Icon
+                  return (
+                    <div
+                      key={item.title}
+                      className="group relative overflow-hidden rounded-sm border border-white/[0.07] bg-[#1b1b1f]/75 px-4 py-3 transition-all hover:border-[var(--accent)]/40 hover:shadow-[0_0_20px_rgba(255,97,39,0.06)]"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent)]/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      <p className="relative z-10 flex items-center gap-2.5 font-display text-[1.1rem] text-[#f2f4f8]">
+                        <Icon className="h-4 w-4 flex-none text-[#f0ab92] transition-colors group-hover:text-[#ff9a73]" strokeWidth={1.5} />
+                        {item.title}
+                      </p>
+                      <p className="relative z-10 mt-1 text-[0.82rem] text-[#9ba0ad]">{item.description}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}

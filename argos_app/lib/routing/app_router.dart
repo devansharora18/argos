@@ -7,6 +7,7 @@ import '../screens/instant_sos_page.dart';
 import '../screens/keyword_reporting_page.dart';
 import '../screens/map_alert_page.dart';
 import '../screens/reports_status_page.dart';
+import '../screens/settings_page.dart';
 import '../screens/text_report_page.dart';
 import '../screens/voice_report_page.dart';
 import 'app_routes.dart';
@@ -58,14 +59,9 @@ class AppRouter {
           beginOffset: const Offset(0, 0.16),
         );
       case AppRoutes.settings:
-        return _buildActionRoute(
+        return _buildSettingsRoute(
           settings: settings,
           selectedTab: ArgosTab.settings,
-          title: 'Settings',
-          subtitle:
-              'Manage trusted contacts, privacy controls, and emergency automation preferences.',
-          icon: Icons.settings_rounded,
-          accent: const Color(0xFFD2D9EA),
           beginOffset: const Offset(-0.14, 0),
         );
       default:
@@ -252,6 +248,37 @@ class AppRouter {
       reverseTransitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (_, __, ___) =>
           KeywordReportingPage(selectedTab: selectedTab),
+      transitionsBuilder: (_, animation, __, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: beginOffset,
+              end: Offset.zero,
+            ).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  static Route<void> _buildSettingsRoute({
+    required RouteSettings settings,
+    required ArgosTab selectedTab,
+    required Offset beginOffset,
+  }) {
+    return PageRouteBuilder<void>(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 320),
+      reverseTransitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (_, __, ___) => SettingsPage(selectedTab: selectedTab),
       transitionsBuilder: (_, animation, __, child) {
         final curved = CurvedAnimation(
           parent: animation,

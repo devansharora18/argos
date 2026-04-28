@@ -3,6 +3,9 @@ export interface AppConfig {
   apiPrefix: string;
   gcpRegion: string;
   idempotencyTtlHours: number;
+  edgeReplayMaxBatchSize: number;
+  edgeReplayDedupWindowSeconds: number;
+  telemetrySummaryMaxLimit: number;
   pubsubDisabled: boolean;
   authDisabled: boolean;
   port: number;
@@ -36,6 +39,9 @@ export const config: AppConfig = {
   apiPrefix: '/api/v1',
   gcpRegion: process.env.GCP_REGION ?? 'us-central1',
   idempotencyTtlHours: readNumber('IDEMPOTENCY_TTL_HOURS', 24),
+  edgeReplayMaxBatchSize: readNumber('EDGE_REPLAY_MAX_BATCH_SIZE', 500),
+  edgeReplayDedupWindowSeconds: readNumber('EDGE_REPLAY_DEDUP_WINDOW_SECONDS', 5),
+  telemetrySummaryMaxLimit: readNumber('TELEMETRY_SUMMARY_MAX_LIMIT', 200),
   pubsubDisabled: readBoolean('PUBSUB_DISABLED', false),
   authDisabled: readBoolean('AUTH_DISABLED', false),
   port: readNumber('PORT', 8080),

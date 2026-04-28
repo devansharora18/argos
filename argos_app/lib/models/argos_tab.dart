@@ -21,9 +21,9 @@ extension ArgosTabX on ArgosTab {
   IconData get icon {
     switch (this) {
       case ArgosTab.status:
-        return Icons.error_outline_rounded;
+        return Icons.power_settings_new_rounded;
       case ArgosTab.reports:
-        return Icons.report_gmailerrorred_rounded;
+        return Icons.outlined_flag_rounded;
       case ArgosTab.map:
         return Icons.place_outlined;
       case ArgosTab.settings:

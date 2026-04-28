@@ -1,17 +1,59 @@
 import 'package:flutter/material.dart';
 
 import '../models/argos_tab.dart';
+import '../services/guest_sos_service.dart';
 import '../widgets/argos_screen_shell.dart';
 
-class InstantSosPage extends StatelessWidget {
+class InstantSosPage extends StatefulWidget {
   const InstantSosPage({super.key, this.selectedTab = ArgosTab.status});
 
   final ArgosTab selectedTab;
 
   @override
+  State<InstantSosPage> createState() => _InstantSosPageState();
+}
+
+class _InstantSosPageState extends State<InstantSosPage> {
+  final GuestSosService _guestSosService = const GuestSosService();
+  String _dispatchStatus = 'Dispatching SOS to staff and control room...';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _dispatchGuestSos();
+      }
+    });
+  }
+
+  Future<void> _dispatchGuestSos() async {
+    try {
+      await _guestSosService.sendGuestSos();
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _dispatchStatus =
+            'SOS sent. Staff and control room have been notified.';
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _dispatchStatus =
+            'Unable to reach the backend. Check the guest app connection.';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ArgosScreenShell(
-      selectedTab: selectedTab,
+      selectedTab: widget.selectedTab,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -22,11 +64,11 @@ class InstantSosPage extends StatelessWidget {
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   SizedBox(height: 2),
-                  _EmergencyActivePill(),
+                  const _EmergencyActivePill(),
                   SizedBox(height: 18),
-                  Text(
+                  const Text(
                     'Help is on the way.',
                     style: TextStyle(
                       color: Color(0xFFEFF0F2),
@@ -35,7 +77,7 @@ class InstantSosPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 12),
-                  Text(
+                  const Text(
                     'Emergency services and your primary\ncontacts have been notified of your\nlocation. Stay where you are if safe.',
                     style: TextStyle(
                       color: Color(0xE7DBB8B2),
@@ -44,14 +86,24 @@ class InstantSosPage extends StatelessWidget {
                       height: 1.45,
                     ),
                   ),
+                  SizedBox(height: 10),
+                  Text(
+                    _dispatchStatus,
+                    style: const TextStyle(
+                      color: Color(0xFFF0C6BD),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      height: 1.35,
+                    ),
+                  ),
                   SizedBox(height: 16),
-                  _LiveGpsSharingCard(),
+                  const _LiveGpsSharingCard(),
                   SizedBox(height: 14),
-                  _CurrentLocationCard(),
+                  const _CurrentLocationCard(),
                   SizedBox(height: 12),
-                  _InstantActionRow(),
+                  const _InstantActionRow(),
                   SizedBox(height: 12),
-                  _StayVisibleCard(),
+                  const _StayVisibleCard(),
                   SizedBox(height: 8),
                 ],
               ),
