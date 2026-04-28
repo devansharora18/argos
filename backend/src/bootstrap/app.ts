@@ -22,7 +22,7 @@ export function createApp(): express.Express {
     next();
   });
 
-https://github.com/devansharora18/argos/pull/13/conflict?name=backend%252Fsrc%252Findex.ts&ancestor_oid=2064c0cfd9ac834f51dca73cc077d6d971c5b739&base_oid=32ee8ff5f1ecb016a404cc3589d05910cabc1b9b&head_oid=146978f28a1c4ac8f4b5db1a39335540be1a38ef  app.options('*', (_req, res) => {
+  app.options('*', (_req, res) => {
     res.sendStatus(204);
   });
 
