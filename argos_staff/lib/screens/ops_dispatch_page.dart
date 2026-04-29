@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/crisis_result.dart';
 import '../models/staff_tab.dart';
+import '../providers/crisis_provider.dart';
 import '../widgets/argos_screen_shell.dart';
 
-class OpsDispatchPage extends StatelessWidget {
+class OpsDispatchPage extends ConsumerWidget {
   const OpsDispatchPage({super.key, this.selectedTab = StaffTab.dispatch});
 
   final StaffTab selectedTab;
 
+  String _formatTime(String iso) {
+    try {
+      final dt = DateTime.parse(iso).toLocal();
+      return '${dt.hour.toString().padLeft(2, '0')}:'
+          '${dt.minute.toString().padLeft(2, '0')}:'
+          '${dt.second.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return '—';
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final crisis = ref.watch(crisisProvider);
+    final dispatch = crisis?.primaryDispatch;
+
     return ArgosScreenShell(
       selectedTab: selectedTab,
       showProfileInTopBar: false,
@@ -21,22 +38,38 @@ class OpsDispatchPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            _DispatchAlertBanner(),
-            SizedBox(height: 16),
-            _IncidentHeaderCard(),
-            SizedBox(height: 16),
-            _MissionDirectiveCard(),
-            SizedBox(height: 20),
-            _BringWithYouSection(),
-            SizedBox(height: 18),
-            _PrimaryRouteCard(),
-            SizedBox(height: 14),
-            _RouteMapCard(),
-            SizedBox(height: 18),
-            _PrimaryActionButton(),
-            SizedBox(height: 10),
-            _ActionRow(),
+          children: [
+            _DispatchAlertBanner(
+              time: crisis != null ? _formatTime(crisis.timestamp) : '—',
+              hasLive: crisis != null,
+            ),
+            if (dispatch != null) ...[
+              const SizedBox(height: 10),
+              _DispatchedToBanner(dispatch: dispatch),
+            ],
+            const SizedBox(height: 16),
+            _IncidentHeaderCard(crisis: crisis),
+            const SizedBox(height: 16),
+            _MissionDirectiveCard(instruction: dispatch?.instruction),
+            const SizedBox(height: 20),
+            _BringWithYouSection(equipment: dispatch?.equipmentToBring),
+            const SizedBox(height: 18),
+            if (dispatch != null) ...[
+              _PrimaryRouteCard(route: dispatch.route),
+              const SizedBox(height: 14),
+              _AnimatedRouteSteps(
+                route: dispatch.route,
+                equipment: dispatch.equipmentToBring,
+              ),
+            ] else ...[
+              _PrimaryRouteCard(route: null),
+              const SizedBox(height: 14),
+              _AnimatedRouteSteps(route: null, equipment: const []),
+            ],
+            const SizedBox(height: 18),
+            const _PrimaryActionButton(),
+            const SizedBox(height: 10),
+            const _ActionRow(),
           ],
         ),
       ),
@@ -45,25 +78,28 @@ class OpsDispatchPage extends StatelessWidget {
 }
 
 class _DispatchAlertBanner extends StatelessWidget {
-  const _DispatchAlertBanner();
+  const _DispatchAlertBanner({required this.time, required this.hasLive});
+
+  final String time;
+  final bool hasLive;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF4A58),
+        color: hasLive ? const Color(0xFFFF4A58) : const Color(0xFF3A3A3A),
         border: Border.all(color: const Color(0x66FFFFFF)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Icon(Icons.warning_rounded, color: Color(0xFF4B0A0F), size: 40),
-          SizedBox(width: 12),
+        children: [
+          const Icon(Icons.warning_rounded, color: Color(0xFF4B0A0F), size: 40),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'DISPATCH\nRECEIVED',
-              style: TextStyle(
+              hasLive ? 'DISPATCH\nRECEIVED' : 'STANDING\nBY',
+              style: const TextStyle(
                 height: 0.98,
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -72,8 +108,8 @@ class _DispatchAlertBanner extends StatelessWidget {
             ),
           ),
           Text(
-            '14:32:06',
-            style: TextStyle(
+            time,
+            style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.4,
@@ -86,11 +122,114 @@ class _DispatchAlertBanner extends StatelessWidget {
   }
 }
 
-class _IncidentHeaderCard extends StatelessWidget {
-  const _IncidentHeaderCard();
+// ---------------------------------------------------------------------------
+// Dispatched-to banner — shows who has been sent (Rajan Mehta / primary)
+// ---------------------------------------------------------------------------
+class _DispatchedToBanner extends StatelessWidget {
+  const _DispatchedToBanner({required this.dispatch});
+  final DispatchDecision dispatch;
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D1520),
+        border: Border.all(color: const Color(0xFF2B3D5A)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0A1828),
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF3A6FA0), width: 1.5),
+            ),
+            child: const Icon(
+              Icons.person_rounded,
+              color: Color(0xFF5090D0),
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dispatch.staffName.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                    color: Color(0xFFD8E4F4),
+                  ),
+                ),
+                Text(
+                  dispatch.role.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.4,
+                    color: Color(0xFF5070A0),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: const Color(0x33FF3A50),
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(color: const Color(0xFFFF3A50)),
+            ),
+            child: Text(
+              dispatch.priority.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.4,
+                color: Color(0xFFFF6070),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IncidentHeaderCard extends StatelessWidget {
+  const _IncidentHeaderCard({required this.crisis});
+
+  final CrisisResult? crisis;
+
+  IconData get _icon {
+    switch (crisis?.crisisType) {
+      case 'fire': return Icons.local_fire_department_rounded;
+      case 'medical': return Icons.medical_services_rounded;
+      case 'security': return Icons.security_rounded;
+      case 'stampede': return Icons.people_rounded;
+      default: return Icons.warning_rounded;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title = crisis != null
+        ? '${crisis!.crisisType[0].toUpperCase()}${crisis!.crisisType.substring(1).replaceAll('_', ' ')} Emergency'
+        : 'NO ACTIVE INCIDENT';
+    final location = crisis != null
+        ? 'Floor ${crisis!.floor} · ${crisis!.zone}'
+        : 'System monitoring all floors';
+    final severity = crisis != null ? 'SEV ${crisis!.severity}/5' : '—';
+    final conf = crisis != null
+        ? 'CONF: ${(crisis!.confidence * 100).round()}%'
+        : 'STANDBY';
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF121622),
@@ -102,33 +241,29 @@ class _IncidentHeaderCard extends StatelessWidget {
             right: -26,
             top: -16,
             child: Icon(
-              Icons.local_fire_department_rounded,
+              _icon,
               size: 150,
               color: const Color(0xFFFF4A58).withValues(alpha: 0.14),
             ),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              _CardAccent(color: Color(0xFFFF3D52)),
+            children: [
+              const _CardAccent(color: Color(0xFFFF3D52)),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(14, 14, 14, 14),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.local_fire_department_rounded,
-                            size: 36,
-                            color: Color(0xFFFF5868),
-                          ),
-                          SizedBox(width: 8),
+                          Icon(_icon, size: 36, color: const Color(0xFFFF5868)),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Structural Fire',
-                              style: TextStyle(
+                              title,
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFFEDEFF8),
@@ -137,40 +272,34 @@ class _IncidentHeaderCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'Room 312 · Floor 3 · East Wing',
-                        style: TextStyle(
+                        location,
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFFA8AFC1),
                         ),
                       ),
-                      SizedBox(height: 14),
+                      const SizedBox(height: 14),
                       Row(
                         children: [
                           Expanded(
                             child: _DataCell(
                               label: 'SEVERITY',
-                              value: 'SEV 4/5',
-                              valueColor: Color(0xFFFF5C67),
+                              value: severity,
+                              valueColor: const Color(0xFFFF5C67),
                             ),
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: _DataCell(
-                              label: 'POPULATION',
-                              value: '47 AT RISK',
-                              valueColor: Color(0xFFFFC262),
+                              label: 'AI CONFIDENCE',
+                              value: conf,
+                              valueColor: const Color(0xFF58F78B),
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 6),
-                      _DataCell(
-                        label: 'AI CONFIDENCE',
-                        value: 'CONF: 0.94',
-                        valueColor: Color(0xFF58F78B),
                       ),
                     ],
                   ),
@@ -185,10 +314,16 @@ class _IncidentHeaderCard extends StatelessWidget {
 }
 
 class _MissionDirectiveCard extends StatelessWidget {
-  const _MissionDirectiveCard();
+  const _MissionDirectiveCard({required this.instruction});
+
+  final String? instruction;
 
   @override
   Widget build(BuildContext context) {
+    final text = instruction?.toUpperCase() ??
+        'AWAITING DISPATCH FROM CONTROL ROOM.\n'
+        'STAND BY FOR GEMINI AI ASSIGNMENT.';
+
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xFF111521),
@@ -209,10 +344,10 @@ class _MissionDirectiveCard extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'MISSION DIRECTIVE',
               style: TextStyle(
                 fontSize: 12,
@@ -221,15 +356,12 @@ class _MissionDirectiveCard extends StatelessWidget {
                 color: Color(0xFFCBC5CE),
               ),
             ),
-            SizedBox(height: 8),
-            Divider(color: Color(0xFF4A4F63), thickness: 1),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
+            const Divider(color: Color(0xFF4A4F63), thickness: 1),
+            const SizedBox(height: 8),
             Text(
-              'IMMEDIATE RESPONSE REQUIRED. PROCEED TO\n'
-              'ROOM 312 VIA AUTHORIZED ROUTE.\n'
-              'SUPPRESSION PRIORITY. SECURE PERIMETER\n'
-              'AND AWAIT HAZMAT TEAM ARRIVAL.',
-              style: TextStyle(
+              text,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 height: 1.45,
@@ -245,14 +377,29 @@ class _MissionDirectiveCard extends StatelessWidget {
 }
 
 class _BringWithYouSection extends StatelessWidget {
-  const _BringWithYouSection();
+  const _BringWithYouSection({required this.equipment});
+
+  final List<String>? equipment;
+
+  IconData _iconFor(String item) {
+    final lower = item.toLowerCase();
+    if (lower.contains('fire') || lower.contains('extinguish')) return Icons.fire_extinguisher_rounded;
+    if (lower.contains('radio') || lower.contains('comm')) return Icons.radio_rounded;
+    if (lower.contains('medical') || lower.contains('first aid') || lower.contains('kit')) return Icons.medical_services_rounded;
+    if (lower.contains('gear') || lower.contains('protect') || lower.contains('tactical')) return Icons.shield_rounded;
+    if (lower.contains('aed') || lower.contains('defib')) return Icons.favorite_rounded;
+    if (lower.contains('torch') || lower.contains('light')) return Icons.flashlight_on_rounded;
+    return Icons.inventory_2_rounded;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final items = equipment?.isNotEmpty == true ? equipment! : <String>[];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
+      children: [
+        const Text(
           'BRING WITH YOU',
           style: TextStyle(
             fontSize: 12,
@@ -261,29 +408,40 @@ class _BringWithYouSection extends StatelessWidget {
             color: Color(0xFFD3C7CB),
           ),
         ),
-        SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _GearChip(
-              icon: Icons.fire_extinguisher_rounded,
-              label: 'Fire Extinguisher',
+        const SizedBox(height: 10),
+        if (items.isEmpty)
+          const Text(
+            'Equipment list will appear on dispatch',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF3A4260),
             ),
-            _GearChip(icon: Icons.radio_rounded, label: 'Radio Unit 03'),
-            _GearChip(icon: Icons.shield_rounded, label: 'Protective Gear'),
-          ],
-        ),
+          )
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: items
+                .map((item) => _GearChip(icon: _iconFor(item), label: item))
+                .toList(),
+          ),
       ],
     );
   }
 }
 
 class _PrimaryRouteCard extends StatelessWidget {
-  const _PrimaryRouteCard();
+  const _PrimaryRouteCard({required this.route});
+
+  final String? route;
 
   @override
   Widget build(BuildContext context) {
+    final routeText = (route != null && route!.isNotEmpty)
+        ? route!
+        : 'Awaiting route from AI dispatch...';
+
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: BoxDecoration(
@@ -292,8 +450,8 @@ class _PrimaryRouteCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
+        children: [
+          const Text(
             'PRIMARY ROUTE',
             style: TextStyle(
               fontSize: 12,
@@ -302,35 +460,377 @@ class _PrimaryRouteCard extends StatelessWidget {
               color: Color(0xFFD6CBD0),
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            'Via East Corridor -> Stairwell C',
-            style: TextStyle(
+            routeText,
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
               color: Color(0xFF58F58C),
             ),
           ),
-          SizedBox(height: 12),
-          _HazardAdvisory(),
+          const SizedBox(height: 12),
+          const _HazardAdvisory(),
         ],
       ),
     );
   }
 }
 
-class _RouteMapCard extends StatelessWidget {
-  const _RouteMapCard();
+// ---------------------------------------------------------------------------
+// Animated step-by-step route — each waypoint fades in with a staggered delay
+// ---------------------------------------------------------------------------
+class _AnimatedRouteSteps extends StatefulWidget {
+  const _AnimatedRouteSteps({required this.route, required this.equipment});
+  final String? route;
+  final List<String> equipment;
+
+  @override
+  State<_AnimatedRouteSteps> createState() => _AnimatedRouteStepsState();
+}
+
+class _AnimatedRouteStepsState extends State<_AnimatedRouteSteps>
+    with TickerProviderStateMixin {
+  late final List<AnimationController> _controllers;
+  late final List<Animation<double>> _fades;
+  List<String> _steps = [];
+
+  /// Parses route string into dramatic waypoint steps.
+  /// Injects floor-switch banners, equipment pickup steps, and start/end labels.
+  static List<String> _build(String? raw, List<String> equipment) {
+    if (raw == null || raw.isEmpty) return [];
+
+    // Split on →, commas, periods or semicolons
+    final chunks = raw
+        .split(RegExp(r'[→,;.]'))
+        .map((s) => s.trim())
+        .where((s) => s.length > 3)
+        .toList();
+
+    final result = <String>[];
+    int? lastFloor;
+    bool equipmentInjected = false;
+
+    for (int i = 0; i < chunks.length; i++) {
+      final chunk = chunks[i];
+
+      // Detect floor mentions like "floor 3", "3rd floor", "level 2"
+      final floorMatch = RegExp(
+        r'(?:floor|level|fl\.?)\s*(\d+)',
+        caseSensitive: false,
+      ).firstMatch(chunk);
+
+      if (floorMatch != null) {
+        final floor = int.tryParse(floorMatch.group(1) ?? '');
+        if (floor != null && floor != lastFloor) {
+          if (lastFloor != null) {
+            // Inject equipment pickup BEFORE the floor switch (at stairwell)
+            if (!equipmentInjected && equipment.isNotEmpty) {
+              result.add('🔧 COLLECT: ${equipment[0]}');
+              if (equipment.length > 1) {
+                result.add('🔧 COLLECT: ${equipment[1]}');
+              }
+              equipmentInjected = true;
+            }
+            result.add('⬆ FLOOR SWITCH → FLOOR $floor');
+          }
+          lastFloor = floor;
+        }
+      }
+      result.add(chunk);
+    }
+
+    // If no floor switch found, inject equipment after first step
+    if (!equipmentInjected && equipment.isNotEmpty && result.length >= 2) {
+      result.insert(1, '🔧 COLLECT: ${equipment[0]}');
+      if (equipment.length > 1) result.insert(2, '🔧 COLLECT: ${equipment[1]}');
+    }
+
+    return result;
+  }
+
+  void _rebuildSteps() {
+    _steps = _build(widget.route, widget.equipment);
+    _buildAnimations(_steps);
+    if (mounted) setState(() {});
+  }
+
+  void _buildAnimations(List<String> steps) {
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    _controllers.clear();
+    _fades.clear();
+
+    for (int i = 0; i < steps.length; i++) {
+      final ctrl = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 400),
+      );
+      _controllers.add(ctrl);
+      _fades.add(CurvedAnimation(parent: ctrl, curve: Curves.easeOut));
+      // stagger: 180 ms per step
+      Future.delayed(Duration(milliseconds: 180 * i), () {
+        if (mounted) ctrl.forward();
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = [];
+    _fades = [];
+    _steps = _build(widget.route, widget.equipment);
+    _buildAnimations(_steps);
+  }
+
+  @override
+  void didUpdateWidget(_AnimatedRouteSteps oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.route != widget.route ||
+        oldWidget.equipment != widget.equipment) {
+      _rebuildSteps();
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  bool _isFloorSwitch(String step) => step.startsWith('⬆ FLOOR SWITCH');
+  bool _isEquipment(String step) => step.startsWith('🔧 COLLECT:');
+
+  IconData _iconFor(int index, int total) {
+    final step = _steps[index];
+    if (_isFloorSwitch(step)) return Icons.swap_vert_rounded;
+    if (_isEquipment(step)) return Icons.fire_extinguisher_rounded;
+    if (index == 0) return Icons.my_location_rounded;
+    if (index == total - 1) return Icons.crisis_alert_rounded;
+    if (step.toLowerCase().contains('stair')) return Icons.stairs_rounded;
+    if (step.toLowerCase().contains('lift') ||
+        step.toLowerCase().contains('elevator')) {
+      return Icons.elevator_rounded;
+    }
+    if (step.toLowerCase().contains('exit') ||
+        step.toLowerCase().contains('door')) {
+      return Icons.door_front_door_rounded;
+    }
+    if (step.toLowerCase().contains('corridor') ||
+        step.toLowerCase().contains('hall')) {
+      return Icons.linear_scale_rounded;
+    }
+    return Icons.turn_right_rounded;
+  }
+
+  Color _colorFor(int index, int total) {
+    final step = _steps[index];
+    if (_isFloorSwitch(step)) return const Color(0xFFFFB347);
+    if (_isEquipment(step)) return const Color(0xFFFFD700);
+    if (index == 0) return const Color(0xFF38E785);
+    if (index == total - 1) return const Color(0xFFFF3A50);
+    return const Color(0xFF5B9CF6);
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_steps.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0C1018),
+          border: Border.all(color: const Color(0xFF1E2436)),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.route_rounded, color: Color(0xFF2A3048), size: 28),
+            SizedBox(width: 12),
+            Text(
+              'Route will appear on dispatch',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3A4260),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
-      height: 150,
       decoration: BoxDecoration(
-        color: const Color(0xFF373D49),
-        border: Border.all(color: const Color(0xFF4A5061)),
+        color: const Color(0xFF0C1018),
+        border: Border.all(color: const Color(0xFF1E2436)),
       ),
-      child: CustomPaint(painter: _DispatchRouteMapPainter()),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.route_rounded, color: Color(0xFF5B9CF6), size: 16),
+              SizedBox(width: 8),
+              Text(
+                'ROUTE TO INCIDENT',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2.2,
+                  color: Color(0xFF7080A0),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          for (int i = 0; i < _steps.length; i++) ...[
+            FadeTransition(
+              opacity: _fades[i],
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(-0.15, 0),
+                  end: Offset.zero,
+                ).animate(_fades[i]),
+                child: _isFloorSwitch(_steps[i])
+                    // ── Floor-switch: full-width dramatic orange banner ──
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0x25FFB347),
+                            border: Border.all(
+                              color: const Color(0xFFFFB347),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.swap_vert_rounded,
+                                color: Color(0xFFFFB347),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _steps[i].replaceFirst('⬆ ', ''),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.6,
+                                  color: Color(0xFFFFB347),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : _isEquipment(_steps[i])
+                    // ── Equipment pickup: yellow highlight box ────────────
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0x22FFD700),
+                            border: Border.all(
+                              color: const Color(0xFFFFD700),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.fire_extinguisher_rounded,
+                                color: Color(0xFFFFD700),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _steps[i].replaceFirst('🔧 ', ''),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                    color: Color(0xFFFFD700),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    // ── Normal waypoint step ──────────────────────────────
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _colorFor(i, _steps.length)
+                                      .withValues(alpha: 0.15),
+                                  border: Border.all(
+                                    color: _colorFor(i, _steps.length),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Icon(
+                                  _iconFor(i, _steps.length),
+                                  size: 16,
+                                  color: _colorFor(i, _steps.length),
+                                ),
+                              ),
+                              if (i < _steps.length - 1)
+                                Container(
+                                  width: 1.5,
+                                  height: 26,
+                                  color: const Color(0xFF2A3448),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                _steps[i],
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.35,
+                                  color: i == _steps.length - 1
+                                      ? const Color(0xFFFFB0B8)
+                                      : const Color(0xFFD0D8EC),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -601,103 +1101,4 @@ class _SecondaryActionButton extends StatelessWidget {
   }
 }
 
-class _DispatchRouteMapPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final bgPaint = Paint()..color = const Color(0xFF4B515D);
-    canvas.drawRect(Offset.zero & size, bgPaint);
-
-    final blueprintPaint = Paint()
-      ..color = const Color(0x66B1BAC9)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.6;
-    for (double x = 12; x < size.width; x += 23) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), blueprintPaint);
-    }
-    for (double y = 10; y < size.height; y += 20) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), blueprintPaint);
-    }
-
-    final noisePaint = Paint()
-      ..color = const Color(0x334A5668)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    final noisePath = Path();
-    noisePath.moveTo(size.width * 0.08, size.height * 0.76);
-    noisePath.lineTo(size.width * 0.18, size.height * 0.56);
-    noisePath.lineTo(size.width * 0.24, size.height * 0.62);
-    noisePath.lineTo(size.width * 0.44, size.height * 0.32);
-    noisePath.lineTo(size.width * 0.55, size.height * 0.44);
-    noisePath.lineTo(size.width * 0.74, size.height * 0.26);
-    canvas.drawPath(noisePath, noisePaint);
-
-    final routePaint = Paint()
-      ..color = const Color(0xFF50EB84)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
-      ..strokeCap = StrokeCap.round;
-    _drawDashedLine(
-      canvas,
-      Offset(size.width * 0.1, size.height * 0.74),
-      Offset(size.width * 0.4, size.height * 0.74),
-      routePaint,
-    );
-    _drawDashedLine(
-      canvas,
-      Offset(size.width * 0.4, size.height * 0.74),
-      Offset(size.width * 0.4, size.height * 0.42),
-      routePaint,
-    );
-    _drawDashedLine(
-      canvas,
-      Offset(size.width * 0.4, size.height * 0.42),
-      Offset(size.width * 0.8, size.height * 0.42),
-      routePaint,
-    );
-    _drawDashedLine(
-      canvas,
-      Offset(size.width * 0.8, size.height * 0.42),
-      Offset(size.width * 0.8, size.height * 0.24),
-      routePaint,
-    );
-
-    final startPaint = Paint()..color = const Color(0xFF44E57A);
-    final endPaint = Paint()..color = const Color(0xFFFF434E);
-    canvas.drawCircle(
-      Offset(size.width * 0.1, size.height * 0.74),
-      9,
-      startPaint,
-    );
-    canvas.drawCircle(
-      Offset(size.width * 0.8, size.height * 0.24),
-      11,
-      endPaint,
-    );
-
-    final cornerPaint = Paint()..color = const Color(0x88212735);
-    final cornerPath = Path()
-      ..moveTo(0, size.height)
-      ..lineTo(size.width * 0.06, size.height)
-      ..lineTo(0, size.height * 0.88)
-      ..close();
-    canvas.drawPath(cornerPath, cornerPaint);
-  }
-
-  void _drawDashedLine(Canvas canvas, Offset p1, Offset p2, Paint paint) {
-    const dash = 13.0;
-    const gap = 8.0;
-    final total = (p2 - p1).distance;
-    final direction = (p2 - p1) / total;
-    double distance = 0;
-
-    while (distance < total) {
-      final start = p1 + direction * distance;
-      final end = p1 + direction * (distance + dash).clamp(0, total).toDouble();
-      canvas.drawLine(start, end, paint);
-      distance += dash + gap;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DispatchRouteMapPainter oldDelegate) => false;
-}
+// _DispatchRouteMapPainter removed — replaced by _AnimatedRouteSteps

@@ -4,10 +4,10 @@ const path = require('path');
 const createWindow = () => {
   const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
   const mainWindow = new BrowserWindow({
-    width: 1680,
-    height: 980,
-    minWidth: 1280,
-    minHeight: 760,
+    width: 1440,
+    height: 900,
+    minWidth: 960,
+    minHeight: 600,
     show: false,
     autoHideMenuBar: true,
     backgroundColor: '#090b12',

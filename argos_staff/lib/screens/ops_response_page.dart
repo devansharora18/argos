@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/staff_tab.dart';
+import '../providers/crisis_provider.dart';
 import '../widgets/argos_screen_shell.dart';
 
-class OpsResponsePage extends StatelessWidget {
+class OpsResponsePage extends ConsumerWidget {
   const OpsResponsePage({super.key, this.selectedTab = StaffTab.response});
 
   final StaffTab selectedTab;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final crisis = ref.watch(crisisProvider);
+    final dispatch = crisis?.primaryDispatch;
+
+    final String missionTitle = crisis != null
+        ? '${crisis.crisisType[0].toUpperCase()}${crisis.crisisType.substring(1).replaceAll('_', ' ').toUpperCase()}'
+        : 'STRUCTURAL FIRE';
+
+    final String missionLocation = crisis != null
+        ? 'Floor ${crisis.floor}, ${crisis.zone}'
+        : 'Room 312, Floor 3';
+
+    final String bannerText = crisis != null
+        ? 'RESPONDING — FLOOR ${crisis.floor} ${crisis.crisisType.toUpperCase()}'
+        : 'RESPONDING - FLOOR 3 FIRE';
+
     return ArgosScreenShell(
       selectedTab: selectedTab,
       showProfileInTopBar: false,
@@ -21,54 +38,100 @@ class OpsResponsePage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            _ResponseStatusBanner(),
-            SizedBox(height: 14),
-            _CurrentMissionCard(),
-            SizedBox(height: 16),
-            _SectionLabel('LIVE UPDATES'),
-            SizedBox(height: 10),
-            _UpdateCard(
-              accent: Color(0xFFFFB6B7),
-              icon: Icons.local_fire_department_rounded,
-              title: 'CRITICAL ALERT',
-              timestamp: 'T-00:45',
-              body:
-                  'Thermal imaging confirms secondary hotspot in adjacent ductwork. Proceed with extreme caution.',
-              titleColor: Color(0xFFFFB6B7),
+          children: [
+            _ResponseStatusBanner(text: bannerText),
+            const SizedBox(height: 14),
+            _CurrentMissionCard(
+              title: missionTitle,
+              location: missionLocation,
+              hasLive: crisis != null,
             ),
-            SizedBox(height: 8),
-            _UpdateCard(
-              accent: Color(0xFFFFC35F),
-              icon: Icons.wifi_tethering_rounded,
-              title: 'SYSTEM ALERT',
-              timestamp: 'T-01:12',
-              body:
-                  'HVAC lockdown initiated for Floor 3. Visibility dropping rapidly in main access corridor.',
-              titleColor: Color(0xFFFFC35F),
+            const SizedBox(height: 16),
+            const _SectionLabel('LIVE UPDATES'),
+            const SizedBox(height: 10),
+            // Live AI control room summary at top
+            if (crisis != null) ...[
+              _UpdateCard(
+                accent: const Color(0xFFFFB6B7),
+                icon: Icons.psychology_rounded,
+                title: 'AI ANALYSIS',
+                timestamp: 'LIVE',
+                body: crisis.controlRoomSummary,
+                titleColor: const Color(0xFFFFB6B7),
+              ),
+              const SizedBox(height: 8),
+            ],
+            // Dispatch instruction if assigned
+            if (dispatch != null) ...[
+              _UpdateCard(
+                accent: const Color(0xFFFFC35F),
+                icon: Icons.assignment_ind_rounded,
+                title: 'YOUR ASSIGNMENT',
+                timestamp: 'DISPATCH',
+                body: dispatch.instruction,
+                titleColor: const Color(0xFFFFC35F),
+              ),
+              const SizedBox(height: 8),
+            ],
+            // Guest notification
+            if (crisis != null) ...[
+              _UpdateCard(
+                accent: const Color(0xFFFF314D),
+                icon: Icons.groups_rounded,
+                title: 'GUEST NOTIFICATION',
+                timestamp: 'BROADCAST',
+                body:
+                    '${crisis.guestNotification.message} Route: ${crisis.guestNotification.evacuationRoute}',
+                titleColor: const Color(0xFFFF314D),
+              ),
+              const SizedBox(height: 8),
+            ],
+            // Static fallback updates shown when no live incident
+            if (crisis == null) ...[
+              const _UpdateCard(
+                accent: Color(0xFFFFB6B7),
+                icon: Icons.local_fire_department_rounded,
+                title: 'CRITICAL ALERT',
+                timestamp: 'T-00:45',
+                body:
+                    'Thermal imaging confirms secondary hotspot in adjacent ductwork. Proceed with extreme caution.',
+                titleColor: Color(0xFFFFB6B7),
+              ),
+              const SizedBox(height: 8),
+              const _UpdateCard(
+                accent: Color(0xFFFFC35F),
+                icon: Icons.wifi_tethering_rounded,
+                title: 'SYSTEM ALERT',
+                timestamp: 'T-01:12',
+                body:
+                    'HVAC lockdown initiated for Floor 3. Visibility dropping rapidly in main access corridor.',
+                titleColor: Color(0xFFFFC35F),
+              ),
+              const SizedBox(height: 8),
+              const _UpdateCard(
+                accent: Color(0xFFFF314D),
+                icon: Icons.groups_rounded,
+                title: 'DISPATCH LOG',
+                timestamp: 'T-02:30',
+                body:
+                    'Evacuation of Floor 4 complete. Medical staging area established at North Exit point.',
+                titleColor: Color(0xFFFF314D),
+              ),
+            ],
+            const SizedBox(height: 16),
+            const _SectionLabel('TACTICAL COMMANDS'),
+            const SizedBox(height: 10),
+            const _PrimaryTacticalButton(),
+            const SizedBox(height: 8),
+            const _DualTacticalRow(),
+            const SizedBox(height: 10),
+            const _ResolvedButton(),
+            const SizedBox(height: 16),
+            const _SectionLabel('EQUIPMENT CHECK'),
+            const SizedBox(height: 10),
+            _EquipmentCheckCard(
+              equipment: dispatch?.equipmentToBring ?? [],
             ),
-            SizedBox(height: 8),
-            _UpdateCard(
-              accent: Color(0xFFFF314D),
-              icon: Icons.groups_rounded,
-              title: 'DISPATCH LOG',
-              timestamp: 'T-02:30',
-              body:
-                  'Evacuation of Floor 4 complete. Medical staging area established at North Exit point.',
-              titleColor: Color(0xFFFF314D),
-            ),
-            SizedBox(height: 16),
-            _SectionLabel('TACTICAL COMMANDS'),
-            SizedBox(height: 10),
-            _PrimaryTacticalButton(),
-            SizedBox(height: 8),
-            _DualTacticalRow(),
-            SizedBox(height: 10),
-            _ResolvedButton(),
-            SizedBox(height: 16),
-            _SectionLabel('EQUIPMENT CHECK'),
-            SizedBox(height: 10),
-            _EquipmentCheckCard(),
           ],
         ),
       ),
@@ -77,7 +140,9 @@ class OpsResponsePage extends StatelessWidget {
 }
 
 class _ResponseStatusBanner extends StatelessWidget {
-  const _ResponseStatusBanner();
+  const _ResponseStatusBanner({required this.text});
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -98,10 +163,10 @@ class _ResponseStatusBanner extends StatelessWidget {
             size: 32,
           ),
           const SizedBox(width: 8),
-          const Expanded(
+          Expanded(
             child: Text(
-              'RESPONDING - FLOOR 3 FIRE',
-              style: TextStyle(
+              text,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.2,
@@ -132,7 +197,15 @@ class _ResponseStatusBanner extends StatelessWidget {
 }
 
 class _CurrentMissionCard extends StatelessWidget {
-  const _CurrentMissionCard();
+  const _CurrentMissionCard({
+    required this.title,
+    required this.location,
+    required this.hasLive,
+  });
+
+  final String title;
+  final String location;
+  final bool hasLive;
 
   @override
   Widget build(BuildContext context) {
@@ -170,17 +243,25 @@ class _CurrentMissionCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0x3D4A3522),
+                    color: hasLive
+                        ? const Color(0x3D1F3A22)
+                        : const Color(0x3D4A3522),
                     borderRadius: BorderRadius.circular(3),
-                    border: Border.all(color: const Color(0xFF695438)),
+                    border: Border.all(
+                      color: hasLive
+                          ? const Color(0xFF2A7840)
+                          : const Color(0xFF695438),
+                    ),
                   ),
-                  child: const Text(
-                    'EN ROUTE',
+                  child: Text(
+                    hasLive ? 'LIVE' : 'EN ROUTE',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.3,
-                      color: Color(0xFFD1B289),
+                      color: hasLive
+                          ? const Color(0xFF50E888)
+                          : const Color(0xFFD1B289),
                     ),
                   ),
                 ),
@@ -189,9 +270,9 @@ class _CurrentMissionCard extends StatelessWidget {
             const SizedBox(height: 8),
             const Divider(color: Color(0xFF2E3548), thickness: 1),
             const SizedBox(height: 8),
-            const Text(
-              'STRUCTURAL FIRE',
-              style: TextStyle(
+            Text(
+              title,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFFE7D9DE),
@@ -199,9 +280,9 @@ class _CurrentMissionCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Room 312, Floor 3',
-              style: TextStyle(
+            Text(
+              location,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFFC3B4B9),
@@ -542,23 +623,33 @@ class _ResolvedButton extends StatelessWidget {
 }
 
 class _EquipmentCheckCard extends StatelessWidget {
-  const _EquipmentCheckCard();
+  const _EquipmentCheckCard({required this.equipment});
+
+  final List<String> equipment;
 
   @override
   Widget build(BuildContext context) {
+    // Use live equipment from AI if available, else show defaults
+    final items = equipment.isNotEmpty
+        ? equipment
+        : ['FIRE EXTINGUISHER', 'RADIO COMM UNIT', 'TACTICAL GEAR SET'];
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF121622),
         borderRadius: BorderRadius.circular(3),
         border: Border.all(color: const Color(0xFF2D3447)),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          _EquipmentItem(label: 'FIRE EXTINGUISHER', checked: true),
-          Divider(height: 1, color: Color(0xFF232A39)),
-          _EquipmentItem(label: 'RADIO COMM UNIT', checked: true),
-          Divider(height: 1, color: Color(0xFF232A39)),
-          _EquipmentItem(label: 'TACTICAL GEAR SET', checked: false),
+          for (int i = 0; i < items.length; i++) ...[
+            if (i > 0)
+              const Divider(height: 1, color: Color(0xFF232A39)),
+            _EquipmentItem(
+              label: items[i].toUpperCase(),
+              checked: i < 2, // first two pre-checked, rest unchecked
+            ),
+          ],
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/staff_tab.dart';
+import '../providers/crisis_provider.dart';
 import '../providers/ops_status_provider.dart';
 import '../widgets/argos_screen_shell.dart';
 
@@ -13,6 +14,7 @@ class OpsDashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final onShift = ref.watch(onShiftProvider);
+    final crisis = ref.watch(crisisProvider);
 
     return ArgosScreenShell(
       selectedTab: selectedTab,
@@ -63,10 +65,12 @@ class OpsDashboardPage extends ConsumerWidget {
               valueColor: Color(0xFFFFC066),
             ),
             const SizedBox(height: 10),
-            const _MetricCard(
+            _MetricCard(
               label: 'ACTIVE INCIDENTS',
-              value: '2',
-              valueColor: Color(0xFFFF4E60),
+              value: crisis != null ? '1' : '0',
+              valueColor: crisis != null
+                  ? const Color(0xFFFF4E60)
+                  : const Color(0xFF38E785),
             ),
             const SizedBox(height: 24),
             const Text(
@@ -79,23 +83,48 @@ class OpsDashboardPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 14),
-            const _IncidentCard(
-              title: 'Structural Fire',
-              location: 'Floor 3, Room 312',
-              severity: 'SEV 4',
-              accent: Color(0xFFFF3F54),
-              badgeBorder: Color(0xFFFF4D61),
-              badgeBackground: Color(0x33FF4D61),
-            ),
-            const SizedBox(height: 12),
-            const _IncidentCard(
-              title: 'Crowd Density',
-              location: 'Lobby, West Entrance',
-              severity: 'SEV 2',
-              accent: Color(0xFFFFBA57),
-              badgeBorder: Color(0xFFFFBE66),
-              badgeBackground: Color(0x33FFC061),
-            ),
+            if (crisis != null) ...[
+              _IncidentCard(
+                title: '${crisis.crisisType[0].toUpperCase()}${crisis.crisisType.substring(1).replaceAll('_', ' ')} — LIVE',
+                location: 'Floor ${crisis.floor}, ${crisis.zone}',
+                severity: 'SEV ${crisis.severity}',
+                confidence: '${(crisis.confidence * 100).round()}% CONF',
+                accent: const Color(0xFFFF3F54),
+                badgeBorder: const Color(0xFFFF4D61),
+                badgeBackground: const Color(0x33FF4D61),
+              ),
+            ] else ...[
+              // Empty state — shown until Gemini fires
+              Container(
+                height: 160,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0B0E18),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF1E2436)),
+                ),
+                alignment: Alignment.center,
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.radar_rounded,
+                      size: 38,
+                      color: Color(0xFF2A3048),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'ALL CLEAR — NO ACTIVE INCIDENTS',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.4,
+                        color: Color(0xFF3A4260),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -288,6 +317,7 @@ class _IncidentCard extends StatelessWidget {
     required this.accent,
     required this.badgeBorder,
     required this.badgeBackground,
+    this.confidence,
   });
 
   final String title;
@@ -296,6 +326,7 @@ class _IncidentCard extends StatelessWidget {
   final Color accent;
   final Color badgeBorder;
   final Color badgeBackground;
+  final String? confidence;
 
   @override
   Widget build(BuildContext context) {
@@ -342,25 +373,54 @@ class _IncidentCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: badgeBackground,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: badgeBorder),
-                    ),
-                    child: Text(
-                      severity,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.2,
-                        color: badgeBorder,
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: badgeBackground,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: badgeBorder),
+                        ),
+                        child: Text(
+                          severity,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.2,
+                            color: badgeBorder,
+                          ),
+                        ),
                       ),
-                    ),
+                      if (confidence != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0x2238E785),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFF38E785),
+                            ),
+                          ),
+                          child: Text(
+                            confidence!,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.0,
+                              color: Color(0xFF38E785),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),

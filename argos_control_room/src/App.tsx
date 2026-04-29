@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CenterPanel } from './components/control-room/CenterPanel';
 import { LeftPanel } from './components/control-room/LeftPanel';
@@ -6,7 +6,7 @@ import { RightPanel } from './components/control-room/RightPanel';
 import { ToastStack } from './components/control-room/ToastStack';
 import { TopBar } from './components/control-room/TopBar';
 import { floorState } from './data/controlRoomData';
-import type { FloorKey, TelemetrySnapshot, Toast } from './types/controlRoom';
+import { floorOrder, type FloorKey, type LiveIncident, type TelemetrySnapshot, type Toast } from './types/controlRoom';
 import { formatClock, mutateValue } from './utils/controlRoom';
 
 export default function App(): JSX.Element {
@@ -18,6 +18,9 @@ export default function App(): JSX.Element {
     () => ({ ...floorState['3'].telemetry }),
   );
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [liveIncident, setLiveIncident] = useState<LiveIncident | null>(null);
+  const [switchingToFloor, setSwitchingToFloor] = useState<FloorKey | null>(null);
+  const lastTimestampRef = useRef<string | null>(null);
 
   const activeSnapshot = floorState[activeFloor];
 
@@ -65,6 +68,53 @@ export default function App(): JSX.Element {
     }
   }, [pushToast]);
 
+  // Poll backend every 3 s for live incident from HAVEN / Gemini
+  useEffect(() => {
+    const poll = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/v1/demo/latest');
+        if (res.ok) {
+          const data: LiveIncident = await res.json();
+          if (data.timestamp !== lastTimestampRef.current) {
+            lastTimestampRef.current = data.timestamp;
+            setLiveIncident(data);
+
+            const incidentFloor = data.floor as FloorKey;
+            const incidentIdx = floorOrder.indexOf(incidentFloor);
+
+            if (incidentIdx >= 0) {
+              // Walk through every floor from 1 up to the incident floor
+              // so judges watch the map step through each level
+              const startIdx = floorOrder.indexOf('1');
+              const journey = startIdx <= incidentIdx
+                ? floorOrder.slice(startIdx, incidentIdx + 1)
+                : [incidentFloor];
+
+              journey.forEach((floor, i) => {
+                window.setTimeout(() => {
+                  setSwitchingToFloor(floor);
+                  setActiveFloor(floor);
+                  // Clear the overlay badge on the final floor after a beat
+                  if (i === journey.length - 1) {
+                    window.setTimeout(() => setSwitchingToFloor(null), 1200);
+                  }
+                }, i * 650); // 650 ms per floor step
+              });
+            }
+
+            pushToast(
+              `⚠ INCIDENT: ${data.crisis_type.toUpperCase()} SEV ${data.severity} — FLOOR ${data.floor}`,
+            );
+          }
+        }
+      } catch {
+        // backend not yet up or no incident — silently ignore
+      }
+    };
+    const timer = window.setInterval(poll, 3000);
+    return () => window.clearInterval(timer);
+  }, [pushToast]);
+
   const handleFloorSelect = useCallback(
     (floor: FloorKey) => {
       setActiveFloor(floor);
@@ -100,16 +150,19 @@ export default function App(): JSX.Element {
           severity={activeSnapshot.severity}
           clock={clock}
           nodesOnline={nodesOnline}
+          liveIncident={liveIncident}
           onAcknowledgeAlert={handleAcknowledgeAlert}
         />
 
-        <main className="grid min-h-0 flex-1 grid-cols-[280px_minmax(480px,1fr)_320px] gap-3 overflow-hidden p-3 max-[1220px]:grid-cols-1 max-[1220px]:overflow-auto max-[1480px]:grid-cols-[240px_minmax(480px,1fr)_300px]">
-          <LeftPanel />
+        <main className="grid min-h-0 flex-1 grid-cols-[260px_minmax(0,1fr)_300px] gap-3 overflow-hidden p-3 max-[1100px]:grid-cols-[220px_minmax(0,1fr)_260px] max-[900px]:grid-cols-1 max-[900px]:overflow-y-auto">
+          <LeftPanel liveIncident={liveIncident} />
 
           <CenterPanel
             activeFloor={activeFloor}
             activeSnapshot={activeSnapshot}
             zoom={zoom}
+            liveIncident={liveIncident}
+            switchingToFloor={switchingToFloor}
             onFloorSelect={handleFloorSelect}
             onZoomIn={handleZoomIn}
             onZoomOut={handleZoomOut}
@@ -119,6 +172,7 @@ export default function App(): JSX.Element {
             activeFloor={activeFloor}
             activeSnapshot={activeSnapshot}
             telemetry={telemetry}
+            liveIncident={liveIncident}
             onCommand={handleCommand}
           />
         </main>

@@ -3,9 +3,57 @@ import {
   personnel,
   unitPanels,
 } from '../../data/controlRoomData';
+import type { LiveIncident, PersonnelTone } from '../../types/controlRoom';
 import { tagToneClass } from '../../utils/controlRoom';
 
-export function LeftPanel(): JSX.Element {
+type LeftPanelProps = {
+  liveIncident?: LiveIncident | null;
+};
+
+export function LeftPanel({ liveIncident }: LeftPanelProps): JSX.Element {
+  const isLive = liveIncident !== null && liveIncident !== undefined;
+
+  // Build merged personnel list — dispatched staff get RESPONDING status
+  const dispatchedIds = new Set(
+    isLive ? liveIncident!.dispatch_decisions.map((d) => d.staff_id) : [],
+  );
+  const dispatchedNames = isLive
+    ? new Set(liveIncident!.dispatch_decisions.map((d) => d.staff_name.split(' ')[0].toUpperCase()))
+    : new Set<string>();
+
+  const mergedPersonnel = [
+    // Inject dispatched staff from Gemini who aren't already in the static list
+    ...(isLive
+      ? liveIncident!.dispatch_decisions
+          .filter(
+            (d) =>
+              !personnel.some((p) =>
+                p.name.toUpperCase().includes(d.staff_name.split(' ')[0].toUpperCase()),
+              ),
+          )
+          .map((d) => ({
+            name: d.staff_name,
+            status: 'RESPONDING',
+            tone: 'danger' as PersonnelTone,
+          }))
+      : []),
+    // Existing static personnel, upgraded to RESPONDING if name matches a dispatch
+    ...personnel.map((p) => {
+      if (
+        isLive &&
+        [...dispatchedNames].some((dn) => p.name.toUpperCase().includes(dn))
+      ) {
+        return { ...p, status: 'RESPONDING', tone: 'danger' as PersonnelTone };
+      }
+      return p;
+    }),
+  ];
+
+  // Build live incident log entry
+  const liveLogEntry = isLive
+    ? `[LIVE] ${new Date(liveIncident!.timestamp).toLocaleTimeString()} — ${liveIncident!.crisis_type.toUpperCase()} SEV ${liveIncident!.severity} FL${liveIncident!.floor} ${liveIncident!.zone}`
+    : null;
+
   return (
     <aside className="flex min-h-0 flex-col gap-3 overflow-auto border border-[#2a3040] bg-gradient-to-b from-[#121722] to-[#0e121c] p-2.5">
       <section>
@@ -33,7 +81,7 @@ export function LeftPanel(): JSX.Element {
           PERSONNEL ON SHIFT
         </h3>
         <ul className="space-y-1.5">
-          {personnel.map((person) => (
+          {mergedPersonnel.map((person) => (
             <li
               key={person.name}
               className={`grid h-9 grid-cols-[1fr_auto] items-center border border-[#252b39] bg-[#161b28] px-2 ${
@@ -56,6 +104,18 @@ export function LeftPanel(): JSX.Element {
           INCIDENT LOG
         </h3>
         <ul className="divide-y divide-[#1f2534]">
+          {/* Live entry pinned to top */}
+          {liveLogEntry && (
+            <li className="py-1.5 font-['Space_Mono'] text-xs text-[#ff7080]">
+              {liveLogEntry}
+            </li>
+          )}
+          {/* Guest notification message */}
+          {isLive && liveIncident!.guest_notification.message && (
+            <li className="py-1.5 font-['Space_Mono'] text-xs text-[#ffcc79]">
+              GUEST NOTIF: {liveIncident!.guest_notification.message.slice(0, 80)}…
+            </li>
+          )}
           {incidentLog.map((entry) => (
             <li
               key={entry}
@@ -69,3 +129,4 @@ export function LeftPanel(): JSX.Element {
     </aside>
   );
 }
+

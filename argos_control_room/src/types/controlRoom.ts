@@ -35,3 +35,40 @@ export type PersonnelMember = {
   status: string;
   tone: PersonnelTone;
 };
+
+// Live incident from HAVEN backend (GET /api/v1/demo/latest)
+export type LiveDispatch = {
+  staff_id: string;
+  staff_name: string;
+  role: string;
+  instruction: string;
+  priority: string;
+  equipment_to_bring: string[];
+  route: string;
+};
+
+export type LiveIncident = {
+  crisis_type: string;
+  severity: number;
+  confidence: number;
+  floor: string;
+  zone: string;
+  classification_reasoning: string;
+  dispatch_decisions: LiveDispatch[];
+  guest_notification: {
+    affected_floors: string[];
+    message: string;
+    evacuation_route: string;
+    tone: string;
+  };
+  control_room_summary: string;
+  external_escalation: {
+    required: boolean;
+    service: string;
+    reason: string;
+    auto_call_in_minutes: number;
+  };
+  decision_reasoning: string;
+  orchestration_confidence: number;
+  timestamp: string;
+};

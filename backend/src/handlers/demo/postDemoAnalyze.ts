@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { logger } from '../../bootstrap/logger';
+import { storeResult } from '../../demo/resultStore';
 import {
   classifyWithGemini,
   orchestrateWithGemini,
@@ -107,14 +108,7 @@ export async function postDemoAnalyzeHandler(
     }
   );
 
-  logger.info('postDemoAnalyzeHandler: analysis complete', {
-    crisis_type: classification.crisis_type,
-    severity: classification.severity,
-    dispatch_count: orchestration.dispatch_decisions.length,
-    external_escalation: orchestration.external_escalation.required,
-  });
-
-  res.status(200).json({
+  const responsePayload: DemoAnalyzeResponse = {
     crisis_type: classification.crisis_type,
     severity: classification.severity,
     confidence: classification.confidence,
@@ -127,5 +121,17 @@ export async function postDemoAnalyzeHandler(
     external_escalation: orchestration.external_escalation,
     decision_reasoning: orchestration.decision_reasoning,
     orchestration_confidence: orchestration.confidence,
+  };
+
+  // Store for polling by argos_staff and argos_control_room
+  storeResult(responsePayload);
+
+  logger.info('postDemoAnalyzeHandler: analysis complete', {
+    crisis_type: classification.crisis_type,
+    severity: classification.severity,
+    dispatch_count: orchestration.dispatch_decisions.length,
+    external_escalation: orchestration.external_escalation.required,
   });
+
+  res.status(200).json(responsePayload);
 }
