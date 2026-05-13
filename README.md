@@ -6,14 +6,31 @@ ARGOS is an AI-powered **Incident Commander** designed specifically for hospital
 
 ---
 
+## Screenshots
+
+
+<div align="center" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center;">
+
+<img src="https://github.com/user-attachments/assets/676a48e8-86c8-4590-9462-362a22fa608d" alt="Screenshot 5" width="180"/>
+
+<img src="https://github.com/user-attachments/assets/7d24a645-6edc-4b6f-a6c2-8a4180eb8c14" alt="Screenshot 4" width="180"/>
+
+<img src="https://github.com/user-attachments/assets/d539314f-fa23-4532-9526-b86816e2de5a" alt="Screenshot 3" width="180"/>
+
+<img src="https://github.com/user-attachments/assets/fb7fdc29-2c83-4969-a76e-5ff3eeffa017" alt="Screenshot 2" width="180"/>
+
+<img src="https://github.com/user-attachments/assets/bcba0f8c-77d7-41e6-b073-f49f6edc2129" alt="Screenshot 1" width="180"/>
+
+</div>
+
 ## 🎬 Prototype Submission
 
 The prototype demonstrates each surface of ARGOS as a standalone, high-fidelity build. End-to-end orchestration across surfaces is scheduled post-prototype; for the demo, surfaces share a common scripted incident ("Fire — Floor 3, East Wing") so the experience reads as one connected system.
 
 | Deliverable | Link |
 |---|---|
-| **Live landing site** | _TBD — Vercel deployment of `argos_landing`_ |
-| **Demo video (3–4 min)** | _TBD_ |
+| **Live landing site** | https://argos-omega.vercel.app/ |
+| **Demo video** | https://www.youtube.com/watch?v=_RrRsBSGrsI |
 | **Pitch deck (PPT)** | _TBD_ |
 | **Source repo** | This repository |
 
