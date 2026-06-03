@@ -5,10 +5,11 @@ const navItems: Array<{ label: string; href: string }> = [
   { label: 'TECHNOLOGY', href: '#technology' },
   { label: 'SOLUTIONS', href: '#solutions' },
   { label: 'HARDWARE', href: '#hardware' },
+  { label: 'DEMO', href: '#demo' },
   { label: 'PROTOTYPE', href: '#prototype' },
 ]
 
-const sectionIds = ['technology', 'solutions', 'hardware', 'prototype', 'request-demo']
+const sectionIds = ['technology', 'solutions', 'hardware', 'demo', 'prototype', 'request-demo']
 
 export function Navbar(): ReactElement {
   const [activeSection, setActiveSection] = useState<string>('technology')

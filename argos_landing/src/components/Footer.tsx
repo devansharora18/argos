@@ -68,7 +68,7 @@ export function Footer(): ReactElement {
       </div>
 
       <div className="mt-10 flex flex-col gap-4 border-t border-white/[0.05] pt-6 text-[0.55rem] font-semibold tracking-[0.2em] text-[#5f6370] sm:flex-row sm:items-center sm:justify-between">
-        <span>&copy; 2024 ARGOS EDGE-AI PLATFORM. ALL RIGHTS RESERVED.</span>
+        <span>&copy; 2026 ARGOS EDGE-AI PLATFORM. ALL RIGHTS RESERVED.</span>
         <span className="text-[#cc9a84]">MISSION CRITICAL STATUS: ACTIVE</span>
       </div>
     </footer>

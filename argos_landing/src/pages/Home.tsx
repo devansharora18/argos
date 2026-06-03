@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useEffect, type ReactElement } from 'react'
 import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
+import { DemoSection } from '../sections/DemoSection'
 import { HardwareSection } from '../sections/HardwareSection'
 import { PrototypeSection } from '../sections/PrototypeSection'
 import { RequestDemoSection } from '../sections/RequestDemoSection'
@@ -48,6 +49,7 @@ export function Home(): ReactElement {
         <TechnologySection />
         <SolutionsSection />
         <HardwareSection />
+        <DemoSection />
         <PrototypeSection />
         <RequestDemoSection />
         <Footer />
